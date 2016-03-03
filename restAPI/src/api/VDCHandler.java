@@ -7,11 +7,16 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import jsonParser.JsonParser;
+
 public class VDCHandler implements HttpHandler{
 
-	@Override
+	JsonParser parser = new JsonParser();
 	public void handle(HttpExchange e) throws IOException {
 		
+		JsonParser parser = new JsonParser();
+		String s = parser.toJson();
+		parser.fromJson(s);
 		String request = e.getRequestMethod();
 		if(request.equals("POST")){
 			String response = "POST";
