@@ -15,9 +15,10 @@ public class VDCHandler implements HttpHandler{
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
-		String s = parser.toJson();
-		parser.fromJson(s);
+		String s = parser.HtoJson();
+		parser.HfromJson(s);
 		String request = e.getRequestMethod();
+		
 		if(request.equals("POST")){
 			String response = "POST";
 			Headers header = e.getResponseHeaders();

@@ -6,21 +6,25 @@ import java.util.Map;
 
 public class vNodes {
 	
-	private Map<String, String> vNodes = new HashMap<String,String>(200);
 
-	public vNodes(Map<String, String> vNodes){
-		this.vNodes = vNodes;
+	private String label;
+	private String id;
+	
+	public vNodes(String label, String id){
+		this.label = label;
+		this.id = id;
 	}
 	
-	public void addNodes(String key, String value){
-		vNodes.put(key, value);
-	}
-	public String getInfoLinks(){
+	/*public String getInfoLinks(){
 		Iterator<String> it = vNodes.keySet().iterator();
 		String result = "";
 		while(it.hasNext()){
 			result = result + "\n" + it.next() + " : " + vNodes.get(it.next());  
 		}
 		return result;
+	}*/
+	
+	public void printInfo(){
+		System.out.println("label : " + label + " id : " + id);
 	}
 }

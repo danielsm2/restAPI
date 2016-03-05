@@ -6,22 +6,28 @@ import java.util.Map;
 
 public class vLinks {
 
-	private Map<String, String> vLinks = new HashMap<String,String>(200);
-
-	public vLinks(Map<String, String> vLinks){
-		this.vLinks = vLinks;
-	}
+	private String source;
+	private String destination;
+	private String id;
+	private String bandwith;
 	
-	public void addLinks(String key, String value){
-		vLinks.put(key, value);
+	public vLinks(String source, String destination, String id, String bandwith){
+		this.source = source;
+		this.destination = destination;
+		this.id = id;
+		this.bandwith = bandwith;
 	}
-	public String getInfoLinks(){
+	/*public String getInfoLinks(){
 		Iterator<String> it = vLinks.keySet().iterator();
 		String result = "";
 		while(it.hasNext()){
 			result = result + "\n" + it.next() + " : " + vLinks.get(it.next());  
 		}
 		return result;
-	}
+	}*/
 	
+	public void printInfo(){
+		System.out.println("source : " + source + " destination : " + destination + " id : "
+				+ id + " bandwith : " + bandwith);
+	}
 }
