@@ -1,6 +1,5 @@
 package jsonParser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -14,6 +13,7 @@ import person.Persona;
 public class JsonParser {
 
 	List<Hierarchy> hierarchy;
+	
 	public String toJson(){
 		Gson gson = new Gson();
 		Persona person = new Persona("daniel", 23, "barcelona");
@@ -22,10 +22,20 @@ public class JsonParser {
 		return json;
 	}
 	
-	public void fromJson(String json){
+	public String toJson(String s){
+		Gson gson = new Gson();
+		Persona person = new Persona("daniel", 23, "barcelona");
+		String json = gson.toJson(person);
+		System.out.println(json);
+		return json;
+	}
+	
+	public Persona fromJson(String json){
 		Gson gson = new Gson();
 		Persona info = (Persona) gson.fromJson(json, new Persona().getClass());
 		info.printInfo();
+		return info;
+		
 	}
 	
 	public String HtoJson(){
@@ -53,10 +63,5 @@ public class JsonParser {
 		Gson gson = new Gson();
 		Hierarchy info = (Hierarchy) gson.fromJson(json, new Hierarchy().getClass());
 		info.printInfo();
-	}
-
-	private Object Hierarchy() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

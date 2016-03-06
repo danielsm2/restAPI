@@ -16,4 +16,16 @@ public class Persona {
 	public void printInfo(){
 		System.out.print("Name: "+name+" Age: "+age+" Location: "+location);
 	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public int getAge(){
+		return age;
+	}
+	
+	public String getLocation(){
+		return location;
+	}
 }

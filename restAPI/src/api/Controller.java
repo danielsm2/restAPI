@@ -1,8 +1,6 @@
 package api;
 
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpExchange;
 import java.net.InetSocketAddress;
 
 import api.VDCHandler;
