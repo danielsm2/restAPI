@@ -42,6 +42,5 @@ public class DecodifyMessage {
 		}*/
 		DataBase db = DataBase.getInstance();
 		db.addRow(p);
-		db.showDB();
 	}
 }

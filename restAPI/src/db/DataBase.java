@@ -83,7 +83,6 @@ public class DataBase {
 				System.exit(1);
 			}
 		}*/
-		System.out.println("Fin");
 	}
 	
 	public void startTable(){
@@ -101,20 +100,23 @@ public class DataBase {
 		updateBD(sql);
 	}
 	
-	public void showDB(){
+	public String showDB(){
 		String sql = "SELECT name,age,location FROM Info";
+		String info = "";
 		try{
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()){
 				String name = rs.getString("name");
 				int age = rs.getInt("age");
 				String location = rs.getString("location");
+				info = info + "Name: " + name + " age: " + age + " location: " + location + "\n";
 				System.out.println("Name: " + name + " age: " + age + " location: " + location);
 			}
 		}catch(SQLException e){
 			System.err.println(e);
 			System.exit(0);
 		}
+		return info;
 	}
 	public void updateBD(String sql){
 		try{
