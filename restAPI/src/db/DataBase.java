@@ -3,6 +3,7 @@ package db;
 import java.sql.Statement;
 
 import person.Persona;
+import vdc.VDC;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +14,7 @@ public class DataBase {
 
 	private static final String DB_USER = "root";
 	private static final String DB_PASS = "password";
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/PEOPLE";
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/algorithms";
 	
 	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
 	
@@ -94,9 +95,10 @@ public class DataBase {
 		updateBD(sql);
 	}
 	
-	public void addRow(Persona p){
-		String sql = "INSERT INTO Info " +
-					 "VALUES ('" + p.getName() + "', " + p.getAge() + ", " + "'" + p.getLocation() + "')";
+	public void addRow(String sql){
+		//String sql = "INSERT INTO  " +
+		//			 "VALUES ('" + p.getName() + "', " + p.getAge() + ", " + "'" + p.getLocation() + "')";
+		
 		updateBD(sql);
 	}
 	

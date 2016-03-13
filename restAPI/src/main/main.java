@@ -11,7 +11,7 @@ public class Main {
 	{
 		DataBase db = DataBase.getInstance();
 		db.initializeDB();
-		System.out.println("Prepared to work...");
+		System.out.println("Prepared to get request...");
 		Controller c = new Controller(new InetSocketAddress("localhost",12119),0);
 		c.start();
 	}

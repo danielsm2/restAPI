@@ -1,18 +1,13 @@
 package db;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-
-import person.Persona;
+import vdc.VDC;
 
 public class DecodifyMessage {
 
-	private String name;
-	private String age;
-	private String location;
+	private VDC vdc;
+	private DataBase db;
 	
-	public void startParse(Persona p){
+	public void startParse(VDC vdc){
 		/*BufferedReader br = new BufferedReader(new StringReader(message));
 		String info;
 		
@@ -40,7 +35,28 @@ public class DecodifyMessage {
 		} catch(IOException io){
 			System.err.println(io);
 		}*/
-		DataBase db = DataBase.getInstance();
-		db.addRow(p);
+		this.vdc = vdc;
+		db = DataBase.getInstance();
+		String statement = vdc.getInfoVdc();
+		db.addRow(statement);
+		decodifyVnode(vdc.getNumElemVnode());
+		decodifyVlink(vdc.getNumElemVlink());
+	}
+	
+	private void decodifyVnode(int vnode){
+		String statement;
+		for(int i = 0; i < vnode; ++i){
+			statement = vdc.getInfoVnode(i);
+			db.addRow(statement);
+			vdc.addInfoVm(i);
+		}
+	}
+	
+	private void decodifyVlink(int vlink){
+		String statement;
+		for(int i = 0; i < vlink; ++i){
+			statement = vdc.getInfoVlink(i);
+			db.addRow(statement);
+		}
 	}
 }

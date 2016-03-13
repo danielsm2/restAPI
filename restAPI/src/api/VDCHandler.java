@@ -3,7 +3,6 @@ package api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.ResultSet;
 import java.util.Scanner;
 
 import com.sun.net.httpserver.Headers;
@@ -13,31 +12,34 @@ import com.sun.net.httpserver.HttpHandler;
 import db.DataBase;
 import db.DecodifyMessage;
 import jsonParser.JsonParser;
-import person.Persona;
+import vdc.VDC;
 
 public class VDCHandler implements HttpHandler{
 
 	JsonParser parser = new JsonParser();
+	DecodifyMessage dm = new DecodifyMessage();
 	DataBase db = DataBase.getInstance();
 	
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
-		//String s = parser.toJson();
-		//parser.fromJson(s);
 		String request = e.getRequestMethod();
 		if(request.equals("POST")){
-			String response = "POST";
+			String response = "GOOD";
 			Headers header = e.getResponseHeaders();
 			header.add("Content-Type","text/plain");
 			e.sendResponseHeaders(200, response.length());
 			
 			InputStream is = e.getRequestBody();
+			@SuppressWarnings("resource")
 			String message = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
-			//DecodifyMessage dm = new DecodifyMessage();
-			Persona p = parser.fromJson(message);
-			db.addRow(p);
-			//dm.startParse(p);
+			System.out.println("entro");
+			System.out.println(message);
+
+			VDC vdc = parser.fromJson(message);
+			System.out.println("salgo");
+			vdc.printInfo();
+			dm.startParse(vdc);
 			
 			OutputStream os = e.getResponseBody();
 			os.write(response.getBytes());
@@ -57,12 +59,14 @@ public class VDCHandler implements HttpHandler{
 		else if(request.equals("GET")){
 			//String response = "GET";
 			String response = db.showDB();
+			String s = parser.toJson(response);
+			System.out.println(s);
 			Headers headers = e.getResponseHeaders();
 			//application/json
 			headers.add("Content-Type","text/plain");
-			e.sendResponseHeaders(200, response.length());
+			e.sendResponseHeaders(200, s.length());
 			OutputStream os = e.getResponseBody();
-			os.write(response.getBytes());
+			os.write(s.getBytes());
 			
 			os.close();
 			e.close();
