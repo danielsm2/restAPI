@@ -10,7 +10,7 @@ public class Controller {
 	HttpServer server;
 	
 	/**
-	 * Funcion que se encarga de crear el servidor HTTP.
+	 * Se crea el servidor HTTP.
 	 * Request permitidas: POST,GET y DELETE.
 	 * @param address
 	 * @param backlog
@@ -26,6 +26,9 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Se activa la escucha de peticiones del servidor
+	 */
 	public void start(){
 		server.start();
 	}

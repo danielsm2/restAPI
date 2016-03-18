@@ -1,5 +1,7 @@
 package vdc;
-
+/**
+ *Definicion de los codigos a transmitir
+ */
 public enum ErrorCheck {
 	VDC_NOT_COMPLETED,
 	VLINK_NOT_COMPLETED,

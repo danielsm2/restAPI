@@ -13,8 +13,8 @@ public class DecodifyMessage {
 	private ResultSet rs;
 	
 	/**
-	 * Funcion que se encarga de parsear el mensaje que se obtiene, se llama
-	 * desde un POST
+	 * Devuelve un codigo de error o, en su defecto, un codigo de confirmacion. Esta funcion se llama a traves
+	 * de una peticion POST. Una vez terminada, se habra creado o actualizado una entrada.
 	 * @param vdc
 	 * @return
 	 */

@@ -8,7 +8,7 @@ import vdc.VDC;
 public class JsonParser {
 	
 	/**
-	 * Se encarga del parseo vdc-json
+	 * Devuelve un string resultado de transformar un objeto VDC a json
 	 * @param vdc
 	 * @return
 	 */
@@ -20,7 +20,7 @@ public class JsonParser {
 	}
 	
 	/**
-	 * Se encarga del parseo json-vdc
+	 * Devuelve un objeto de tipo VDC resultado de parsear un json
 	 * @param json
 	 * @return
 	 */
@@ -28,10 +28,7 @@ public class JsonParser {
 		Gson gson = new Gson();
 		VDC vdc = (VDC) gson.fromJson(json, new VDC().getClass());
 		vdc.printInfo();
-	
-		//String vdc_return = gson.toJson(vdc, VDC.class);
-		//System.out.println("use of toJson to prove if it works:      \n\n");
-		//System.out.println(vdc_return);
+			
 		return vdc;
 		
 	}

@@ -40,14 +40,19 @@ public class DataBase {
 	
 	private static DataBase instance;
 	
+	/**
+	 * Singleton de la clase DataBase 
+	 * @return
+	 */
 	public static DataBase getInstance(){
 		if(instance == null)
 			return instance = new DataBase();
 		else
 			return instance;
 	}
+	
 	/**
-	 * Inicializa base de datos con estado running
+	 * La base de datos pasa a estar en estado running
 	 */
 	public void  startDB(){
 		loadDriver();
@@ -56,7 +61,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * El estado de la base de datos pasa a estar parada
+	 * La base de datos pasa a estar parada
 	 */
 	public void stopDB(){
 		/*try{
@@ -80,7 +85,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Crea una conexión con la base de datos
+	 * Crear una conexión con la base de datos
 	 */
 	private void createConnection(){
 		try{
@@ -93,7 +98,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Crea una base de datos si no existe
+	 * Crear una base de datos si no existe
 	 */
 	private void createDB(){
 		System.out.println("Creating new DB...");
@@ -110,11 +115,11 @@ public class DataBase {
 	}
 	
 	/**
-	 * Hace un volcado de la base de datos(algorithms) a través del tenantID
-	 * @param vdc
-	 * @param level
-	 * @param foreignKey
-	 * @param request
+	 * Hace un volcado de la base de datos a través del campo informado tenantID
+	 * @param vdc : objeto que se construira si se hace un GET
+	 * @param level : nivel dentro del arbol
+	 * @param foreignKey : busqueda a traves de la base de datos
+	 * @param request : tipo de peticion(get o delete)
 	 * @return
 	 * @throws SQLException
 	 */
@@ -194,7 +199,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Se encarga de los inserts, nueva entrada contra db
+	 * Se encarga de los inserts, nueva entrada contra base de datos
 	 * @param sql
 	 */
 	public void newEntryDB(String sql){
@@ -207,7 +212,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Se encarga de hacer una query contra la db
+	 * Devuelve el resultado de realizar una query contra la base de datos
 	 * @param ps
 	 * @return
 	 */
@@ -225,7 +230,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Devuelve una instance de PreparedStatement con una conexión con la db
+	 * Devuelve una instancia de PreparedStatement con conexión con la base de datos
 	 * @param sql
 	 * @return
 	 */

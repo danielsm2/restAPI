@@ -17,17 +17,16 @@ import vdc.ErrorCheck;
 import vdc.VDC;
 
 public class VDCHandler implements HttpHandler{
-
-	JsonParser parser = new JsonParser();
-	DecodifyMessage dm = new DecodifyMessage();
-	DataBase db = DataBase.getInstance();
-	VDC vdc;
-	
+		
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
+		DecodifyMessage dm = new DecodifyMessage();
+		DataBase db = DataBase.getInstance();
+		VDC vdc;
 		String request = e.getRequestMethod();
 		String response;
+		
 		if(request.equals("POST")){
 			Headers header = e.getResponseHeaders();
 			header.add("Content-Type","text/plain");
@@ -36,32 +35,32 @@ public class VDCHandler implements HttpHandler{
 			@SuppressWarnings("resource")
 			String message = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
 
-			VDC vdc = parser.fromJson(message);
+			vdc = parser.fromJson(message);
 			ErrorCheck ec = dm.startParse(vdc);
 						
 			if(ec.equals(ErrorCheck.ALL_OK)){
-				response = "GOOD";
-				e.sendResponseHeaders(200, response.length());
+				response = "VDC REGISTERED";
+				e.sendResponseHeaders(201, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VDC_NOT_COMPLETED)){
-				response = "vdc not completed";
+				response = "TENANTID IS REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
-				response = "vlink not completed";
+				response = "ALL VLINK FIELDS ARE REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
-				response = "vm not completed";
+				response = "ALL VM FIELDS ARE REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
-				response = "vnode not completed";
+				response = "ALL VNODE FIELDS ARE REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else{
 				response = "ERROR";
-				e.sendResponseHeaders(400, response.length());
+				e.sendResponseHeaders(500, response.length());
 			}
 			
 			OutputStream os = e.getResponseBody();
@@ -71,39 +70,75 @@ public class VDCHandler implements HttpHandler{
 			e.close();
 		}
 		else if(request.equals("DELETE")){
-			response = "GOOD";
 			Headers headers = e.getResponseHeaders();
 			headers.add("Content-Type","text/plain");
-			
+			OutputStream os = e.getResponseBody();
+
 			try {
 				ErrorCheck ec = db.showDB(new VDC(), "vdc", "tenant", "delete");
+				if(ec.equals(ErrorCheck.ALL_OK)){
+					response = "DELETED VDC";
+					e.sendResponseHeaders(200, response.length());
+				}
+				else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
+					response = "TENANTID IS NOT FOUND";
+					e.sendResponseHeaders(404, response.length());
+				}
+				else{
+					response = "ERROR";
+					e.sendResponseHeaders(500, response.length());
+				}
+				
+				os.write(response.getBytes());
+				os.close();
+				e.close();
 			} catch (SQLException e1) {
+				response = "ERROR";
+				e.sendResponseHeaders(500, response.length());
+				os.write(response.getBytes());
+
+				os.close();
 				e.close();
 				e1.printStackTrace();
 			}
-			
-			e.sendResponseHeaders(200, response.length());
-			OutputStream os = e.getResponseBody();
-			os.write(response.getBytes());
-			os.close();
-			e.close();
 		}
 		else if(request.equals("GET")){
 			Headers headers = e.getResponseHeaders();
 			headers.add("Content-Type","application/json");
-			VDC result = new VDC();
+			vdc = new VDC();
+			OutputStream os = e.getResponseBody();
+			
 			try {
-				ErrorCheck ec = db.showDB(result, "vdc", "tenant", "get");
-			}catch (SQLException e1) {
+				ErrorCheck ec = db.showDB(vdc, "vdc", "tenant", "get");
+				response = parser.toJson(vdc);
+				if(ec.equals(ErrorCheck.ALL_OK)){
+					e.sendResponseHeaders(200, response.length());
+				}
+				else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
+					response = "TENANTID GIVEN IS NOT FOUND";
+					e.sendResponseHeaders(404, response.length());
+				}
+
+				os.write(response.getBytes());
+				os.close();
+				e.close();
+			} catch (SQLException e1) {
+				response = "ERROR";
+				e.sendResponseHeaders(500, response.length());
+				os.write(response.getBytes());
+				
+				os.close();
 				e.close();
 				e1.printStackTrace();
 			}
-			
-			String json = parser.toJson(result);
-
-			e.sendResponseHeaders(200, json.length());
+		}
+		else if(request.equals("PUT") || request.equals("HEAD") || request.equals("OPTIONS")){
+			Headers headers = e.getResponseHeaders();
+			headers.add("Content-Type","text/plain");
 			OutputStream os = e.getResponseBody();
-			os.write(json.getBytes());
+			response = "REQUEST NOT AVAILABLE";
+			e.sendResponseHeaders(400, response.length());
+			os.write(response.getBytes());
 			
 			os.close();
 			e.close();
