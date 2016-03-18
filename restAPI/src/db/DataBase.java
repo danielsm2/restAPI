@@ -46,13 +46,18 @@ public class DataBase {
 		else
 			return instance;
 	}
-	
+	/**
+	 * Inicializa base de datos con estado running
+	 */
 	public void  startDB(){
 		loadDriver();
 		createConnection();
 		createDB();
 	}
 	
+	/**
+	 * El estado de la base de datos pasa a estar parada
+	 */
 	public void stopDB(){
 		/*try{
 			c.close();
@@ -61,6 +66,9 @@ public class DataBase {
 		}*/
 	}
 	
+	/**
+	 * Cargar el driver de mysl
+	 */
 	private void loadDriver(){
 		try{
 			Class.forName(JDBC_PATH);
@@ -71,6 +79,9 @@ public class DataBase {
 		}
 	}
 	
+	/**
+	 * Crea una conexión con la base de datos
+	 */
 	private void createConnection(){
 		try{
 			c = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
@@ -81,6 +92,9 @@ public class DataBase {
 		}
 	}
 	
+	/**
+	 * Crea una base de datos si no existe
+	 */
 	private void createDB(){
 		System.out.println("Creating new DB...");
 		try{
@@ -95,6 +109,15 @@ public class DataBase {
 		}
 	}
 	
+	/**
+	 * Hace un volcado de la base de datos(algorithms) a través del tenantID
+	 * @param vdc
+	 * @param level
+	 * @param foreignKey
+	 * @param request
+	 * @return
+	 * @throws SQLException
+	 */
 	public ErrorCheck showDB(VDC vdc, String level, String foreignKey, String request) throws SQLException{
 		if(level.equals("vdc")){
 			ps = prepareStatement(queryVDC);
@@ -170,11 +193,19 @@ public class DataBase {
 		return ErrorCheck.ALL_OK;
 	}
 	
+	/**
+	 * Query contra la tabla vnode
+	 * @return
+	 */
 	public ErrorCheck getVnodeDB(/*VDC vdc*/){
 		String sql = "SELECT id,label FROM vnode WHERE fk_vdc='";
 		return ErrorCheck.ALL_OK;
 	}
 	
+	/**
+	 * Se encarga de los inserts, nueva entrada contra db
+	 * @param sql
+	 */
 	public void newEntryDB(String sql){
 		try{
 			stmt.executeUpdate(sql);
@@ -184,6 +215,11 @@ public class DataBase {
 		}
 	}
 	
+	/**
+	 * Se encarga de hacer una query contra la db
+	 * @param ps
+	 * @return
+	 */
 	public ResultSet checkEntryDB(PreparedStatement ps){
 		//startDB();
 		try{
@@ -197,6 +233,11 @@ public class DataBase {
 		return null;
 	}
 	
+	/**
+	 * Devuelve una instance de PreparedStatement con una conexión con la db
+	 * @param sql
+	 * @return
+	 */
 	public PreparedStatement prepareStatement(String sql){
 		try{
 			return c.prepareStatement(sql);

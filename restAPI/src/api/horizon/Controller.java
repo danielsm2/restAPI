@@ -9,6 +9,12 @@ import java.net.InetSocketAddress;
 public class Controller {
 	HttpServer server;
 	
+	/**
+	 * Funcion que se encarga de crear el servidor HTTP.
+	 * Request permitidas: POST,GET y DELETE.
+	 * @param address
+	 * @param backlog
+	 */
 	public Controller(InetSocketAddress address, int backlog) {
 		try{
 			server = HttpServer.create();

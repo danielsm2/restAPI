@@ -6,6 +6,11 @@ import vdc.VDC;
 
 public class JsonParser {
 	
+	/**
+	 * Se encarga del parseo vdc-json
+	 * @param vdc
+	 * @return
+	 */
 	public String toJson(VDC vdc){
 		Gson gson = new Gson();
 		String json = gson.toJson(vdc,new VDC().getClass());
@@ -13,6 +18,11 @@ public class JsonParser {
 		return json;
 	}
 	
+	/**
+	 * Se encarga del parseo json-vdc
+	 * @param json
+	 * @return
+	 */
 	public VDC fromJson(String json){
 		Gson gson = new Gson();
 		VDC vdc = (VDC) gson.fromJson(json, new VDC().getClass());

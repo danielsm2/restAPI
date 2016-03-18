@@ -12,6 +12,12 @@ public class DecodifyMessage {
 	private DataBase db;
 	private ResultSet rs;
 	
+	/**
+	 * Funcion que se encarga de parsear el mensaje que se obtiene, se llama
+	 * desde un POST
+	 * @param vdc
+	 * @return
+	 */
 	public ErrorCheck startParse(VDC vdc){
 		this.vdc = vdc;
 		ErrorCheck ec = vdc.checkVDC();
@@ -32,6 +38,14 @@ public class DecodifyMessage {
 		return ec;
 	}
 	
+	/**
+	 * Decodificacion perteneciente a vnode.
+	 * Se encarga de realizar una query contra la db.
+	 * Dependiendo del resultado de la query, se hara 
+	 * un update o un insert.
+	 * @param vnode
+	 * @throws SQLException
+	 */
 	private void decodifyVnode(int vnode) throws SQLException{
 		for(int i = 0; i < vnode; ++i){
 			rs = db.checkEntryDB(vdc.entryCheckerDB_vnode(i));
@@ -39,6 +53,14 @@ public class DecodifyMessage {
 		}
 	}
 	
+	/**
+	 * Decodificacion perteneciente a vlink.
+	 * Se encarga de realizar una query contra la db.
+	 * Dependiendo del resultado de la query, se hara 
+	 * un update o un insert.
+	 * @param vlink
+	 * @throws SQLException
+	 */
 	private void decodifyVlink(int vlink) throws SQLException{
 		for(int i = 0; i < vlink; ++i){
 			rs = db.checkEntryDB(vdc.entryCheckerDB_vlink(i));
