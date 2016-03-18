@@ -2,11 +2,15 @@ package db;
 
 import java.sql.Statement;
 
-import person.Persona;
+import vdc.ErrorCheck;
 import vdc.VDC;
+import vdc.VMS;
+import vdc.vLinks;
+import vdc.vNodes;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -18,8 +22,21 @@ public class DataBase {
 	
 	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
 	
+	private String queryVDC = "SELECT tenantID FROM vdc WHERE tenantID=?";
+	private String queryVNODE = "SELECT * FROM vnode WHERE fk_vdc=?";
+	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=? OR fk_from=?";
+	private String queryVM = "SELECT * FROM vm WHERE fk_vnode=?";
+	
+	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
+	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
+	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=? OR fk_from=?";
+	private String deleteVM = "DELETE FROM vm WHERE fk_vnode=?";
+
+
+	
 	Connection c;
 	Statement stmt;
+	PreparedStatement ps;
 	
 	private static DataBase instance;
 	
@@ -30,16 +47,23 @@ public class DataBase {
 			return instance;
 	}
 	
-	public void  initializeDB(){
+	public void  startDB(){
 		loadDriver();
 		createConnection();
 		createDB();
 	}
 	
+	public void stopDB(){
+		/*try{
+			c.close();
+		}catch(SQLException e){
+			System.err.println(e);
+		}*/
+	}
+	
 	private void loadDriver(){
 		try{
 			Class.forName(JDBC_PATH);
-			System.out.println("Driver loaded");
 		}catch(ClassNotFoundException e){
 			System.err.println("Unable to load database driver");
 			System.err.println(e);
@@ -50,7 +74,6 @@ public class DataBase {
 	private void createConnection(){
 		try{
 			c = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
-			System.out.println("Connected to date base");
 		}catch(SQLException e){
 			System.err.println("Unable to connect with data base");
 			System.err.println(e);
@@ -63,69 +86,124 @@ public class DataBase {
 		try{
 			stmt = c.createStatement();
 			//stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS PEOPLE");
-			startTable();
+			//startTable();
 			System.out.println("DB created succesfully");
 		}catch(Exception e){
 			System.err.println("Can not create a statement");
 			System.err.println(e);
 			System.exit(1);
 		}
-		/*finally{
-			try{
-				stmt.close();
-			}catch(SQLException e){
-				System.err.println(e);
-				System.exit(1);
-			}
-			try{
-				c.close();
-			}catch(SQLException e){
-				System.err.println(e);
-				System.exit(1);
-			}
-		}*/
 	}
 	
-	public void startTable(){
-		String sql = "CREATE TABLE IF NOT EXISTS Info " +
-					 "(name VARCHAR(255), " +
-					 "age INTEGER not NULL, " +
-					 "location VARCHAR(255), " +
-					 "PRIMARY KEY ( name ))";
-		updateBD(sql);
-	}
-	
-	public void addRow(String sql){
-		//String sql = "INSERT INTO  " +
-		//			 "VALUES ('" + p.getName() + "', " + p.getAge() + ", " + "'" + p.getLocation() + "')";
-		
-		updateBD(sql);
-	}
-	
-	public String showDB(){
-		String sql = "SELECT name,age,location FROM Info";
-		String info = "";
-		try{
-			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()){
-				String name = rs.getString("name");
-				int age = rs.getInt("age");
-				String location = rs.getString("location");
-				info = info + "Name: " + name + " age: " + age + " location: " + location + "\n";
-				System.out.println("Name: " + name + " age: " + age + " location: " + location);
+	public ErrorCheck showDB(VDC vdc, String level, String foreignKey, String request) throws SQLException{
+		if(level.equals("vdc")){
+			ps = prepareStatement(queryVDC);
+			ps.setString(1, foreignKey);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()){
+				if(request.equals("get"))
+					vdc.addTenant(rs.getString("tenantID"));
+				showDB(vdc, "vnode", foreignKey, request);
+				if(request.equals("delete")){
+					PreparedStatement aux = prepareStatement(deleteVDC);
+					aux.setString(1, foreignKey);
+					aux.executeUpdate();
+				}
 			}
-		}catch(SQLException e){
-			System.err.println(e);
-			System.exit(0);
+			else{
+				return ErrorCheck.TENANTID_NOT_FOUND;
+			}
 		}
-		return info;
+		else if(level.equals("vnode")) {
+			ps = prepareStatement(queryVNODE);
+			ps.setString(1, foreignKey);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				if(request.equals("get"))
+					vdc.addNodes(new vNodes(rs.getString("id"), rs.getString("label")));
+				showDB(vdc, "vm", rs.getString("id"), request);
+				showDB(vdc, "vlink", rs.getString("id"), request);
+				if(request.equals("delete")){
+					System.out.println("delete vnode");
+					PreparedStatement aux = prepareStatement(deleteVNODE);
+					aux.setString(1, rs.getString("id"));
+					aux.executeUpdate();
+				}
+			}
+		}
+		else if(level.equals("vm")){
+			ps = prepareStatement(queryVM);
+			ps.setString(1, foreignKey);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				if(request.equals("get")){
+					vNodes vnode = vdc.getVnode(foreignKey);
+					vnode.addVM(new VMS(rs.getString("id"),rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
+				}
+				else if(request.equals("delete")){
+					System.out.println("delete vm");
+					PreparedStatement aux = prepareStatement(deleteVM);
+					aux.setString(1, foreignKey);
+					aux.executeUpdate();
+				}
+				
+			}
+		}
+		else if(level.equals("vlink")){
+			ps = prepareStatement(queryVLINK);
+			ps.setString(1, foreignKey);
+			ps.setString(2, foreignKey);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				if(request.equals("get"))
+					vdc.addLinks(new vLinks(rs.getString("id"), rs.getString("bandwith"), rs.getString("fk_to"), rs.getString("fk_from")));
+				else if(request.equals("delete")){
+					System.out.println("delete vlink");
+					PreparedStatement aux = prepareStatement(deleteVLINK);
+					aux.setString(1, foreignKey);
+					aux.setString(2, foreignKey);
+					aux.executeUpdate();
+				}		
+			}
+			return ErrorCheck.ALL_OK;
+		}
+		return ErrorCheck.ALL_OK;
 	}
-	public void updateBD(String sql){
+	
+	public ErrorCheck getVnodeDB(/*VDC vdc*/){
+		String sql = "SELECT id,label FROM vnode WHERE fk_vdc='";
+		return ErrorCheck.ALL_OK;
+	}
+	
+	public void newEntryDB(String sql){
 		try{
 			stmt.executeUpdate(sql);
 		}catch(SQLException e){
 			System.err.println(e);
 			System.exit(0);
 		}
+	}
+	
+	public ResultSet checkEntryDB(PreparedStatement ps){
+		//startDB();
+		try{
+			ResultSet rs = ps.executeQuery();
+			//stopDB();
+			return rs;
+		}catch(SQLException e){
+			System.err.println(e);
+			System.exit(0);
+		}
+		return null;
+	}
+	
+	public PreparedStatement prepareStatement(String sql){
+		try{
+			return c.prepareStatement(sql);
+		}catch(SQLException e){
+			System.err.println(e);
+			System.exit(1);
+		}
+		return null;
 	}
 }

@@ -1,9 +1,10 @@
-package api;
+package api.horizon;
 
 import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
 
-import api.VDCHandler;
+import api.horizon.VDCHandler;
+
+import java.net.InetSocketAddress;
 
 public class Controller {
 	HttpServer server;

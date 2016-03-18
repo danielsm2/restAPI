@@ -1,62 +1,48 @@
 package db;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import vdc.ErrorCheck;
 import vdc.VDC;
 
 public class DecodifyMessage {
 
 	private VDC vdc;
 	private DataBase db;
+	private ResultSet rs;
 	
-	public void startParse(VDC vdc){
-		/*BufferedReader br = new BufferedReader(new StringReader(message));
-		String info;
-		
-		try{
-			while((info = br.readLine()) != null){
-				String[] s = info.split(":");
-				System.out.println("aqui  " + s[0]);
-				if(s[0].equals("name"))
-					name = s[1];
-				else if(s[0].equals("age"))
-					age = s[1];
-				else if(s[0].equals("location"))
-					location = s[1];
-				else{
-					System.err.println("Can't filter the key: "+ s[0]);
-					System.exit(1);
-				}
-				System.out.println("aqui2");
-			}
-			if(!name.isEmpty() & !age.isEmpty() & !location.isEmpty()){
-				Persona p = new Persona(name, Integer.parseInt(age), location);
-				DataBase db = DataBase.getInstance();
-				db.addRow(p);
-			}
-		} catch(IOException io){
-			System.err.println(io);
-		}*/
+	public ErrorCheck startParse(VDC vdc){
 		this.vdc = vdc;
-		db = DataBase.getInstance();
-		String statement = vdc.getInfoVdc();
-		db.addRow(statement);
-		decodifyVnode(vdc.getNumElemVnode());
-		decodifyVlink(vdc.getNumElemVlink());
+		ErrorCheck ec = vdc.checkVDC();
+		if(ec.equals(ErrorCheck.ALL_OK)){
+			db = DataBase.getInstance();
+			try{
+				rs = db.checkEntryDB(vdc.entryCheckerDB_vdc());
+				if(vdc.checkRow(rs))
+					vdc.updateVdc();
+				decodifyVnode(vdc.getNumElemVnode());
+				decodifyVlink(vdc.getNumElemVlink());
+				System.out.println("*************** DB updated ***************");
+			}catch(SQLException e){
+				System.err.println(e);
+				System.exit(1);
+			}
+		}
+		return ec;
 	}
 	
-	private void decodifyVnode(int vnode){
-		String statement;
+	private void decodifyVnode(int vnode) throws SQLException{
 		for(int i = 0; i < vnode; ++i){
-			statement = vdc.getInfoVnode(i);
-			db.addRow(statement);
-			vdc.addInfoVm(i);
+			rs = db.checkEntryDB(vdc.entryCheckerDB_vnode(i));
+			vdc.updateVnode(i,vdc.checkRow_vnode(rs, i));
 		}
 	}
 	
-	private void decodifyVlink(int vlink){
-		String statement;
+	private void decodifyVlink(int vlink) throws SQLException{
 		for(int i = 0; i < vlink; ++i){
-			statement = vdc.getInfoVlink(i);
-			db.addRow(statement);
+			rs = db.checkEntryDB(vdc.entryCheckerDB_vlink(i));
+			vdc.updateVlink(i,vdc.checkRow_vlink(rs,i));
 		}
 	}
 }

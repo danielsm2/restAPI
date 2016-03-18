@@ -6,18 +6,10 @@ import vdc.VDC;
 
 public class JsonParser {
 	
-	/*public String toJson(){
+	public String toJson(VDC vdc){
 		Gson gson = new Gson();
-		Persona person = new Persona("daniel", 23, "barcelona");
-		String json = gson.toJson(person);
-		System.out.println(json);
-		return json;
-	}*/
-	
-	public String toJson(String s){
-		Gson gson = new Gson();
-		String json = gson.toJson(s,new VDC().getClass());
-		System.out.println(json);
+		String json = gson.toJson(vdc,new VDC().getClass());
+		System.out.println("Print de json creado: " + json);
 		return json;
 	}
 	
@@ -50,9 +42,9 @@ public class JsonParser {
 		return json;
 	}*/
 	
-	public void HfromJson(String json){
+	/*public void HfromJson(String json){
 		Gson gson = new Gson();
 		VDC info = (VDC) gson.fromJson(json, new VDC().getClass());
 		info.printInfo();
-	}
+	}*/
 }
