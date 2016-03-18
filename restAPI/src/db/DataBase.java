@@ -194,15 +194,6 @@ public class DataBase {
 	}
 	
 	/**
-	 * Query contra la tabla vnode
-	 * @return
-	 */
-	public ErrorCheck getVnodeDB(/*VDC vdc*/){
-		String sql = "SELECT id,label FROM vnode WHERE fk_vdc='";
-		return ErrorCheck.ALL_OK;
-	}
-	
-	/**
 	 * Se encarga de los inserts, nueva entrada contra db
 	 * @param sql
 	 */

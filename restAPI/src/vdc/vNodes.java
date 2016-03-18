@@ -14,8 +14,6 @@ public class vNodes {
 	private String id;
 	private String label;
 	private List<VMS> vms = new ArrayList<VMS>();
-	private DataBase db;
-	private PreparedStatement ps;
 	
 	public vNodes(String id, String label){
 		this.id = id;
@@ -57,10 +55,10 @@ public class vNodes {
 	
 	public void updateVM() throws SQLException{
 		//db.startDB();
-		db = DataBase.getInstance();
+		DataBase db = DataBase.getInstance();
 		ResultSet rs;
 		for(VMS aux : vms){
-			ps = db.prepareStatement("SELECT id FROM vm WHERE id = ?");
+			PreparedStatement ps = db.prepareStatement("SELECT id FROM vm WHERE id = ?");
 			ps.setString(1, aux.getId());
 			rs = db.checkEntryDB(ps); 
 			if(aux.checkRow(rs)){

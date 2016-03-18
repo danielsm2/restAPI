@@ -66,6 +66,7 @@ public class VDCHandler implements HttpHandler{
 			
 			OutputStream os = e.getResponseBody();
 			os.write(response.getBytes());
+			
 			os.close();
 			e.close();
 		}
@@ -77,7 +78,7 @@ public class VDCHandler implements HttpHandler{
 			try {
 				ErrorCheck ec = db.showDB(new VDC(), "vdc", "tenant", "delete");
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
+				e.close();
 				e1.printStackTrace();
 			}
 			
@@ -88,25 +89,21 @@ public class VDCHandler implements HttpHandler{
 			e.close();
 		}
 		else if(request.equals("GET")){
+			Headers headers = e.getResponseHeaders();
+			headers.add("Content-Type","application/json");
 			VDC result = new VDC();
 			try {
 				ErrorCheck ec = db.showDB(result, "vdc", "tenant", "get");
-				System.out.println("Printing info result: ");
-				result.printInfo();
-				System.out.println("End of printing info result");
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
+			}catch (SQLException e1) {
+				e.close();
 				e1.printStackTrace();
 			}
 			
-			String s = parser.toJson(vdc);
-			System.out.println(s);
-			Headers headers = e.getResponseHeaders();
-		
-			headers.add("Content-Type","application/json");
-			e.sendResponseHeaders(200, s.length());
+			String json = parser.toJson(result);
+
+			e.sendResponseHeaders(200, json.length());
 			OutputStream os = e.getResponseBody();
-			os.write(s.getBytes());
+			os.write(json.getBytes());
 			
 			os.close();
 			e.close();

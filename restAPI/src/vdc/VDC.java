@@ -14,8 +14,6 @@ public class VDC {
 	private String tenantID;
 	private List<vNodes> vnodes = new ArrayList<vNodes>();
 	private List<vLinks> vlinks = new ArrayList<vLinks>();
-	private PreparedStatement ps;
-	private DataBase db = DataBase.getInstance();
 	
 	public void addTenant(String tenant_id){
 		this.tenantID = tenant_id;
@@ -56,12 +54,14 @@ public class VDC {
 
 	public void updateVdc() throws SQLException{
 		//db.startDB();
+		DataBase db = DataBase.getInstance();
 		db.newEntryDB("INSERT INTO vdc VALUES ('" + tenantID + "')");
 		//db.stopDB();
 	}
 	
 	public void updateVnode(int i, boolean insert) throws SQLException{	
 		//db.startDB();
+		DataBase db = DataBase.getInstance();
 		if(insert){
 			String id = vnodes.get(i).getId();
 			String label = vnodes.get(i).getLabel();
@@ -69,7 +69,7 @@ public class VDC {
 			System.out.println("insert vnode");
 		}			
 		else{
-			ps = db.prepareStatement("UPDATE vnode SET label = ? WHERE id= ?");
+			PreparedStatement ps = db.prepareStatement("UPDATE vnode SET label = ? WHERE id= ?");
 			ps.setString(1, vnodes.get(i).getLabel());
 			ps.setString(2, vnodes.get(i).getId());
 			ps.executeUpdate();
@@ -81,6 +81,7 @@ public class VDC {
 	
 	public void updateVlink(int i, boolean insert) throws SQLException{
 		//db.startDB();
+		DataBase db = DataBase.getInstance();
 		if(insert){
 			String id = vlinks.get(i).getId();
 			String bandwith = vlinks.get(i).getBandwith();
@@ -90,7 +91,7 @@ public class VDC {
 			System.out.println("insert vlink");
 		}
 		else{
-			ps = db.prepareStatement("UPDATE vlink SET bandwith=?,fk_to=?,fk_from=? WHERE id=?");
+			PreparedStatement ps = db.prepareStatement("UPDATE vlink SET bandwith=?,fk_to=?,fk_from=? WHERE id=?");
 			ps.setString(1, vlinks.get(i).getBandwith());
 			ps.setString(2, vlinks.get(i).getDestination());
 			ps.setString(3, vlinks.get(i).getSource());
@@ -115,19 +116,22 @@ public class VDC {
 	}
 	
 	public PreparedStatement entryCheckerDB_vdc() throws SQLException{
-		ps = db.prepareStatement("SELECT tenantID FROM vdc WHERE tenantID = ?");
+		DataBase db = DataBase.getInstance();
+		PreparedStatement ps = db.prepareStatement("SELECT tenantID FROM vdc WHERE tenantID = ?");
 		ps.setString(1, tenantID);
 		return ps;
 	}
 	
 	public PreparedStatement entryCheckerDB_vnode(int i) throws SQLException{
-		ps = db.prepareStatement("SELECT id FROM vnode WHERE id=?");
+		DataBase db = DataBase.getInstance();
+		PreparedStatement ps = db.prepareStatement("SELECT id FROM vnode WHERE id=?");
 		ps.setString(1, vnodes.get(i).getId());
 		return ps;
 	}
 	
 	public PreparedStatement entryCheckerDB_vlink(int i) throws SQLException{
-		ps = db.prepareStatement("SELECT id FROM vlink WHERE id=?");
+		DataBase db = DataBase.getInstance();
+		PreparedStatement ps = db.prepareStatement("SELECT id FROM vlink WHERE id=?");
 		ps.setString(1, vlinks.get(i).getId());
 		return ps;	
 	}

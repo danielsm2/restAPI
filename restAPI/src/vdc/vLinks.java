@@ -16,14 +16,7 @@ public class vLinks{
 		this.to = destination;
 		this.from = source;
 	}
-	/*public String getInfoLinks(){
-		Iterator<String> it = vLinks.keySet().iterator();
-		String result = "";
-		while(it.hasNext()){
-			result = result + "\n" + it.next() + " : " + vLinks.get(it.next());  
-		}
-		return result;
-	}*/
+	
 	public String getId(){
 		return id;
 	}
