@@ -57,10 +57,8 @@ public class VDC {
 	 * @throws SQLException
 	 */
 	public void updateVdc() throws SQLException{
-		//db.startDB();
 		DataBase db = DataBase.getInstance();
 		db.newEntryDB("INSERT INTO vdc VALUES ('" + tenantID + "')");
-		//db.stopDB();
 	}
 	
 	/**
@@ -70,7 +68,6 @@ public class VDC {
 	 * @throws SQLException
 	 */
 	public void updateVnode(int i, boolean insert) throws SQLException{	
-		//db.startDB();
 		DataBase db = DataBase.getInstance();
 		if(insert){
 			String id = vnodes.get(i).getId();
@@ -86,7 +83,6 @@ public class VDC {
 			System.out.println("update vnode");
 		}
 		vnodes.get(i).updateVM();
-		//db.stopDB();
 	}
 	
 	/**
@@ -96,7 +92,6 @@ public class VDC {
 	 * @throws SQLException
 	 */
 	public void updateVlink(int i, boolean insert) throws SQLException{
-		//db.startDB();
 		DataBase db = DataBase.getInstance();
 		if(insert){
 			String id = vlinks.get(i).getId();
@@ -115,7 +110,6 @@ public class VDC {
 			ps.executeUpdate();
 			System.out.println("update vlink");
 		}
-		//db.stopDB();
 	}
 	
 	/**

@@ -57,7 +57,13 @@ public class DataBase {
 	public void  startDB(){
 		loadDriver();
 		createConnection();
-		createDB();
+		//createDB();
+		try {
+			stmt = c.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -100,10 +106,9 @@ public class DataBase {
 	/**
 	 * Crear una base de datos si no existe
 	 */
-	private void createDB(){
+	/*private void createDB(){
 		System.out.println("Creating new DB...");
 		try{
-			stmt = c.createStatement();
 			//stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS PEOPLE");
 			//startTable();
 			System.out.println("DB created succesfully");
@@ -112,7 +117,7 @@ public class DataBase {
 			System.err.println(e);
 			System.exit(1);
 		}
-	}
+	}*/
 	
 	/**
 	 * Hace un volcado de la base de datos a través del campo informado tenantID
@@ -216,11 +221,9 @@ public class DataBase {
 	 * @param ps
 	 * @return
 	 */
-	public ResultSet checkEntryDB(PreparedStatement ps){
-		//startDB();
+	public ResultSet queryDB(PreparedStatement ps){
 		try{
 			ResultSet rs = ps.executeQuery();
-			//stopDB();
 			return rs;
 		}catch(SQLException e){
 			System.err.println(e);

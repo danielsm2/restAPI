@@ -45,13 +45,12 @@ public class vNodes {
 	}
 	
 	public void updateVM() throws SQLException{
-		//db.startDB();
 		DataBase db = DataBase.getInstance();
 		ResultSet rs;
 		for(VMS aux : vms){
 			PreparedStatement ps = db.prepareStatement("SELECT id FROM vm WHERE id = ?");
 			ps.setString(1, aux.getId());
-			rs = db.checkEntryDB(ps); 
+			rs = db.queryDB(ps); 
 			if(aux.checkRow(rs)){
 			    String id = aux.getId();
 				String label = aux.getLabel();
@@ -70,7 +69,6 @@ public class vNodes {
 				System.out.println("update vm");
 			}
 		}
-		//db.stopDB();
 	}
 	
 	public String getId(){

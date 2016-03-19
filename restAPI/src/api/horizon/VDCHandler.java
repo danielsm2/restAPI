@@ -3,7 +3,6 @@ package api.horizon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.Scanner;
 

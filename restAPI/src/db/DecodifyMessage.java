@@ -2,6 +2,8 @@ package db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import vdc.ErrorCheck;
 import vdc.VDC;
@@ -11,6 +13,7 @@ public class DecodifyMessage {
 	private VDC vdc;
 	private DataBase db;
 	private ResultSet rs;
+	private Map<String,VDC> setVDC = new HashMap<String,VDC>();
 	
 	/**
 	 * Devuelve un codigo de error o, en su defecto, un codigo de confirmacion. Esta funcion se llama a traves
@@ -24,12 +27,13 @@ public class DecodifyMessage {
 		if(ec.equals(ErrorCheck.ALL_OK)){
 			db = DataBase.getInstance();
 			try{
-				rs = db.checkEntryDB(vdc.entryCheckerDB_vdc());
+				rs = db.queryDB(vdc.entryCheckerDB_vdc());
 				if(vdc.checkRow(rs))
 					vdc.updateVdc();
 				decodifyVnode(vdc.getNumElemVnode());
 				decodifyVlink(vdc.getNumElemVlink());
 				System.out.println("*************** DB updated ***************");
+				//setVDC.put(vdc.getTenant(), vdc);
 			}catch(SQLException e){
 				System.err.println(e);
 				System.exit(1);
@@ -48,7 +52,7 @@ public class DecodifyMessage {
 	 */
 	private void decodifyVnode(int vnode) throws SQLException{
 		for(int i = 0; i < vnode; ++i){
-			rs = db.checkEntryDB(vdc.entryCheckerDB_vnode(i));
+			rs = db.queryDB(vdc.entryCheckerDB_vnode(i));
 			vdc.updateVnode(i,vdc.checkRow_vnode(rs, i));
 		}
 	}
@@ -63,7 +67,7 @@ public class DecodifyMessage {
 	 */
 	private void decodifyVlink(int vlink) throws SQLException{
 		for(int i = 0; i < vlink; ++i){
-			rs = db.checkEntryDB(vdc.entryCheckerDB_vlink(i));
+			rs = db.queryDB(vdc.entryCheckerDB_vlink(i));
 			vdc.updateVlink(i,vdc.checkRow_vlink(rs,i));
 		}
 	}
