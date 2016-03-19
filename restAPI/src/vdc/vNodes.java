@@ -24,15 +24,6 @@ public class vNodes {
 		vms.add(vm);
 	}
 	
-	/*public String getInfoLinks(){
-		Iterator<String> it = vNodes.keySet().iterator();
-		String result = "";
-		while(it.hasNext()){
-			result = result + "\n" + it.next() + " : " + vNodes.get(it.next());  
-		}
-		return result;
-	}*/
-	
 	public void printInfo(){
 		System.out.println("id : " + id + " label : " + label);
 		System.out.println("vms : " );

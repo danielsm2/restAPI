@@ -52,6 +52,10 @@ public class VDC {
 		return tenantID;
 	}
 
+	/**
+	 * Se realiza un insert contra la tabla vdc de la base de datos
+	 * @throws SQLException
+	 */
 	public void updateVdc() throws SQLException{
 		//db.startDB();
 		DataBase db = DataBase.getInstance();
@@ -59,6 +63,12 @@ public class VDC {
 		//db.stopDB();
 	}
 	
+	/**
+	 * Se reliza una accion contra la tabla vnode de la base de datos
+	 * @param i
+	 * @param insert = Si true: insert, sino update
+	 * @throws SQLException
+	 */
 	public void updateVnode(int i, boolean insert) throws SQLException{	
 		//db.startDB();
 		DataBase db = DataBase.getInstance();
@@ -79,6 +89,12 @@ public class VDC {
 		//db.stopDB();
 	}
 	
+	/**
+	 * Se realiza una accion contra la tabla vlink de la base de datos
+	 * @param i
+	 * @param insert = Si true: insert, sino update
+	 * @throws SQLException
+	 */
 	public void updateVlink(int i, boolean insert) throws SQLException{
 		//db.startDB();
 		DataBase db = DataBase.getInstance();
@@ -102,6 +118,9 @@ public class VDC {
 		//db.stopDB();
 	}
 	
+	/**
+	 * Imprime la estructura vdc
+	 */
 	public void printInfo(){
 		System.out.println("tenant_id : " + tenantID);
 		for(vNodes vn : vnodes){
@@ -115,6 +134,11 @@ public class VDC {
 		}
 	}
 	
+	/**
+	 * Se hace una query contra la tabla vdc de la base de datos 
+	 * @return
+	 * @throws SQLException
+	 */
 	public PreparedStatement entryCheckerDB_vdc() throws SQLException{
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT tenantID FROM vdc WHERE tenantID = ?");
@@ -122,6 +146,12 @@ public class VDC {
 		return ps;
 	}
 	
+	/**
+	 * Se hace una query contra la tabla vnode de la base de datos
+	 * @param i
+	 * @return
+	 * @throws SQLException
+	 */
 	public PreparedStatement entryCheckerDB_vnode(int i) throws SQLException{
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vnode WHERE id=?");
@@ -129,6 +159,12 @@ public class VDC {
 		return ps;
 	}
 	
+	/**
+	 * Se hace una query contra la tabla vlink de la base de datos
+	 * @param i
+	 * @return
+	 * @throws SQLException
+	 */
 	public PreparedStatement entryCheckerDB_vlink(int i) throws SQLException{
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vlink WHERE id=?");
@@ -136,6 +172,10 @@ public class VDC {
 		return ps;	
 	}
 	
+	/**
+	 * Se hace un check del json informado una vez parseado a la estructura VDC
+	 * @return
+	 */
 	public ErrorCheck checkVDC(){
 		if(tenantID.isEmpty()){
 			return ErrorCheck.VDC_NOT_COMPLETED;
@@ -158,6 +198,11 @@ public class VDC {
 		}
 	}
 	
+	/**
+	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
+	 * @param rs
+	 * @return
+	 */
 	public boolean checkRow(ResultSet rs){
 		try{
 			while(rs.next()){
@@ -170,18 +215,40 @@ public class VDC {
 		return true;
 	}
 	
+	/**
+	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
+	 * @param rs
+	 * @param i
+	 * @return
+	 */
 	public boolean checkRow_vnode(ResultSet rs, int i){
 		return vnodes.get(i).checkRow(rs);
 	}
 	
+	/**
+	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
+	 * @param rs
+	 * @param i
+	 * @return
+	 */
 	public boolean checkRow_vlink(ResultSet rs, int i){
 		return vlinks.get(i).checkRow(rs);
 	}
 	
+	/**
+	 * Devuelve el id del vnode solicitado
+	 * @param i
+	 * @return
+	 */
 	public String getIdVnode(int i){
 		return vnodes.get(i).getId();
 	}
 	
+	/**
+	 * Devuelve el id del vlink solicitado
+	 * @param i
+	 * @return
+	 */
 	public String getIdVlink(int i){
 		return vlinks.get(i).getId();
 	}

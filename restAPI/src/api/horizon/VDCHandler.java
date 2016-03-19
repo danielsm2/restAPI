@@ -3,6 +3,7 @@ package api.horizon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -73,20 +74,28 @@ public class VDCHandler implements HttpHandler{
 			Headers headers = e.getResponseHeaders();
 			headers.add("Content-Type","text/plain");
 			OutputStream os = e.getResponseBody();
+			String query = e.getRequestURI().getQuery();
 
 			try {
-				ErrorCheck ec = db.showDB(new VDC(), "vdc", "tenant", "delete");
-				if(ec.equals(ErrorCheck.ALL_OK)){
-					response = "DELETED VDC";
-					e.sendResponseHeaders(200, response.length());
-				}
-				else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-					response = "TENANTID IS NOT FOUND";
-					e.sendResponseHeaders(404, response.length());
+				String tenant = checkQuery(query);
+				if(!tenant.isEmpty()){
+					ErrorCheck ec = db.showDB(new VDC(), "vdc", tenant, "delete");
+					if(ec.equals(ErrorCheck.ALL_OK)){
+						response = "DELETED VDC";
+						e.sendResponseHeaders(200, response.length());
+					}
+					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
+						response = "TENANTID IS NOT FOUND";
+						e.sendResponseHeaders(404, response.length());
+					}
+					else{
+						response = "ERROR";
+						e.sendResponseHeaders(500, response.length());
+					}
 				}
 				else{
-					response = "ERROR";
-					e.sendResponseHeaders(500, response.length());
+					response = "TENANTID PARAMETER IS REQUIRED";
+					e.sendResponseHeaders(400, response.length());
 				}
 				
 				os.write(response.getBytes());
@@ -107,21 +116,29 @@ public class VDCHandler implements HttpHandler{
 			headers.add("Content-Type","application/json");
 			vdc = new VDC();
 			OutputStream os = e.getResponseBody();
-			
+			String query = e.getRequestURI().getQuery();
 			try {
-				ErrorCheck ec = db.showDB(vdc, "vdc", "tenant", "get");
-				response = parser.toJson(vdc);
-				if(ec.equals(ErrorCheck.ALL_OK)){
-					e.sendResponseHeaders(200, response.length());
+				String tenant = checkQuery(query);
+				if(!tenant.isEmpty()){
+					ErrorCheck ec = db.showDB(vdc, "vdc", tenant, "get");
+					response = parser.toJson(vdc);
+					if(ec.equals(ErrorCheck.ALL_OK)){
+						e.sendResponseHeaders(200, response.length());
+					}
+					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
+						response = "TENANTID GIVEN IS NOT FOUND";
+						e.sendResponseHeaders(404, response.length());
+					}
 				}
-				else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-					response = "TENANTID GIVEN IS NOT FOUND";
-					e.sendResponseHeaders(404, response.length());
+				else{
+					response = "TENANTID PARAMETER IS REQUIRED";
+					e.sendResponseHeaders(400, response.length());
 				}
-
+				
 				os.write(response.getBytes());
 				os.close();
 				e.close();
+				
 			} catch (SQLException e1) {
 				response = "ERROR";
 				e.sendResponseHeaders(500, response.length());
@@ -144,4 +161,25 @@ public class VDCHandler implements HttpHandler{
 			e.close();
 		}
 	}	
+	
+	/**
+	 * Recoge el parametro tenantid
+	 * @param query
+	 * @return
+	 */
+	private String checkQuery(String query){
+		if(query != null){
+			String[] param = query.split("=");
+			if(param.length > 2){
+				String[] tenant = param[1].split("&");
+				return tenant[0];
+			}
+			else{
+				return param[1];
+			}
+		}
+		else{
+			return "";
+		}
+	}
 }
