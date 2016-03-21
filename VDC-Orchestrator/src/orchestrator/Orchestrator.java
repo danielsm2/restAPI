@@ -6,6 +6,7 @@ import api.horizon.HorizonApiHandler;
 import api.horizon.HorizonApiServer;
 import api.keystone.KeystoneApiClient;
 import api.nova.Flavor;
+import api.nova.Host;
 import api.nova.NovaApiClient;
 import utils.JsonParser;
 
@@ -29,6 +30,10 @@ public class Orchestrator {
 			ArrayList<Flavor> flavors = novaapi.getFlavors("http://localhost:8774", token, parser);
 			
 			System.out.println(flavors.toString());
+			
+			ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
+			
+			System.out.println(hosts.toString());
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -91,4 +91,83 @@ public class NovaApiClient {
 		
 		return flavors;
 	}
+	
+	public ArrayList<Host> getHosts(String novacontrollerurl, String token, JsonParser parser) {
+		
+		ArrayList<Host> hosts = new ArrayList<Host>(0);
+		
+		HttpURLConnection connection = null;
+		
+		try {
+			URL url = new URL(novacontrollerurl+"/v2.1/os-hosts");
+			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("X-Auth-Token", token);
+			
+			int code = connection.getResponseCode();
+			
+			if(code == HttpURLConnection.HTTP_OK) {
+				
+				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	            StringBuffer response = new StringBuffer();
+	            String inputLine = null;
+	 
+	            while ((inputLine = in.readLine()) != null) {
+	                response.append(inputLine);
+	            }
+	            in.close();
+	            
+	            String json = response.toString();
+	            
+	            System.out.println(json);
+	            
+	            hosts = parser.readHostList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+	            
+	            Iterator<Host> iterator = hosts.iterator();
+	            
+	            while (iterator.hasNext()) {
+	            	
+	            	Host host = iterator.next();
+	            	
+	            	String host_name = host.getName();
+	            	
+	            	url = new URL(novacontrollerurl+"/v2.1/os-hosts/"+host_name);
+	    			connection = (HttpURLConnection)url.openConnection();
+	    			connection.setRequestMethod("GET");
+	    			connection.setRequestProperty("X-Auth-Token", token);
+	    			
+	    			code = connection.getResponseCode();
+	    			
+	    			if(code == HttpURLConnection.HTTP_OK) {
+	    				in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	    	            response = new StringBuffer();
+	    	            inputLine = null;
+	    	 
+	    	            while ((inputLine = in.readLine()) != null) {
+	    	                response.append(inputLine);
+	    	            }
+	    	            in.close();
+	    	            
+	    	           json = response.toString();
+	    	           
+	    	           System.out.println(json);
+
+	    	           parser.readHost(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), host);
+	    			}
+	            }
+			}
+			else {
+		    	System.out.println(code+" "+connection.getResponseMessage());
+		    }
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+		    if(connection != null) {
+		        connection.disconnect(); 
+		      }
+		}
+		
+		return hosts;
+	}
 }
