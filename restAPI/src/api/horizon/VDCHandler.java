@@ -58,6 +58,10 @@ public class VDCHandler implements HttpHandler{
 				response = "ALL VNODE FIELDS ARE REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
+			else if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG)){
+				response = "TO OR FROM(VNODE) PARAMETER OF VLINK IS NOT WELL DEFINED";
+				e.sendResponseHeaders(400, response.length());
+			}
 			else{
 				response = "ERROR";
 				e.sendResponseHeaders(500, response.length());
@@ -125,7 +129,7 @@ public class VDCHandler implements HttpHandler{
 						e.sendResponseHeaders(200, response.length());
 					}
 					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-						response = "TENANTID GIVEN IS NOT FOUND";
+						response = "TENANTID IS NOT FOUND";
 						e.sendResponseHeaders(404, response.length());
 					}
 				}
