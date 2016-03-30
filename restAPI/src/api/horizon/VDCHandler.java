@@ -47,15 +47,15 @@ public class VDCHandler implements HttpHandler{
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
-				response = "ALL VLINK FIELDS ARE REQUIRED";
+				response = "ALL VLINK FIELDS REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
-				response = "ALL VM FIELDS ARE REQUIRED";
+				response = "ALL VM FIELDS REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
-				response = "ALL VNODE FIELDS ARE REQUIRED";
+				response = "ALL VNODE FIELDS REQUIRED";
 				e.sendResponseHeaders(400, response.length());
 			}
 			else if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG)){
@@ -88,7 +88,7 @@ public class VDCHandler implements HttpHandler{
 						e.sendResponseHeaders(200, response.length());
 					}
 					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-						response = "TENANTID IS NOT FOUND";
+						response = "TENANTID NOT FOUND";
 						e.sendResponseHeaders(404, response.length());
 					}
 					else{
@@ -97,7 +97,7 @@ public class VDCHandler implements HttpHandler{
 					}
 				}
 				else{
-					response = "TENANTID PARAMETER IS REQUIRED";
+					response = "TENANTID REQUIRED";
 					e.sendResponseHeaders(400, response.length());
 				}
 				
@@ -129,12 +129,12 @@ public class VDCHandler implements HttpHandler{
 						e.sendResponseHeaders(200, response.length());
 					}
 					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-						response = "TENANTID IS NOT FOUND";
+						response = "TENANTID NOT FOUND";
 						e.sendResponseHeaders(404, response.length());
 					}
 				}
 				else{
-					response = "TENANTID PARAMETER IS REQUIRED";
+					response = "TENANTID REQUIRED";
 					e.sendResponseHeaders(400, response.length());
 				}
 				
