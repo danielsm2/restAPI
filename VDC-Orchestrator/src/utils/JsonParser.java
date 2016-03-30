@@ -3,12 +3,12 @@ package utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import com.google.gson.stream.JsonReader;
 
 import api.nova.Flavor;
+import api.nova.Host;
 
 public class JsonParser {
 
@@ -93,6 +93,100 @@ public class JsonParser {
 			reader.endObject();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			reader.close();
+		}
+	}
+	
+	public ArrayList<Host> readHostList(InputStream in) throws IOException {
+		
+		ArrayList<Host> hosts = new ArrayList<Host>(0);
+		try {
+			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginObject();
+			reader.nextName();
+			reader.beginArray();
+			while (reader.hasNext()) {
+				reader.beginObject();
+				String name = null;
+				while(reader.hasNext()) {
+					String n = reader.nextName();
+					if(n.equals("host_name")) {
+						name = reader.nextString();
+					}
+					else {
+						reader.skipValue();
+					}
+				}
+				reader.endObject();
+				hosts.add(new Host(name));
+			}
+			reader.endArray();
+			reader.endObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			reader.close();
+		}
+		
+		return hosts;
+	}
+	
+	public void readHost(InputStream in, Host host) throws IOException {
+		
+		try {
+			
+			int cpu = 0, cpu_used = 0;
+			double disk = 0, disk_used = 0;
+			double memory = 0, memory_used = 0;
+			
+			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginObject();
+			reader.nextName();
+			reader.beginArray();
+			while(reader.hasNext()) {
+				reader.beginObject();
+				reader.nextName();
+				reader.beginObject();
+				int c = 0;
+				double d = 0;
+				double m = 0;
+				while(reader.hasNext()) {
+					String n = reader.nextName();
+					if (n.equals("cpu")) {
+						c = reader.nextInt();
+					}else if(n.equals("disk_gb")) {
+						d = reader.nextDouble();
+					} else if(n.equals("memory_mb")){
+						m = reader.nextDouble();
+					} else if(n.equals("project")) {
+						String project = reader.nextString();
+						if(project.equals("(total)")) {
+							cpu = c;
+							disk = d;
+							memory = m;
+						} else if (project.equals("(used_now)")) {
+							cpu_used = c;
+							disk_used = d;
+							memory_used = m;
+						}
+						
+					} else {
+						reader.skipValue();
+					}
+				}
+				reader.endObject();
+				reader.endObject();
+			}
+			host.setCpus(cpu-cpu_used);
+			host.setDisk(disk-disk_used);
+			host.setMemory(memory-memory_used);
+			reader.endArray();
+			reader.endObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			reader.close();
 		}
 	}
 }
