@@ -171,7 +171,7 @@ public class DataBase {
 			while(rs.next()){
 				if(request.equals("get")){
 					vNodes vnode = vdc.getVnode(foreignKey);
-					vnode.addVM(new VMS(rs.getString("id"),rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
+					vnode.addVM(new VMS(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
 					System.out.println("delete vm");
