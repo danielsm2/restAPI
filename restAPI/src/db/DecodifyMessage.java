@@ -77,4 +77,15 @@ public class DecodifyMessage {
 		}
 		return ErrorCheck.ALL_OK;
 	}
+	
+	public void saveVDC(VDC vdc){
+		setVDC.put(vdc.getTenant(), vdc);
+	}
+	
+	public void rollbackVDC(VDC vdc) throws SQLException{
+		if(setVDC.containsKey(vdc.getTenant()))
+			startParse(setVDC.get(vdc.getTenant()));
+		else
+			db.showDB(new VDC(), "vdc", vdc.getTenant(), "DELETE");
+	}
 }

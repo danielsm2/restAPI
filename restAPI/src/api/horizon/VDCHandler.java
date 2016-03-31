@@ -17,13 +17,14 @@ import vdc.ErrorCheck;
 import vdc.VDC;
 
 public class VDCHandler implements HttpHandler{
+	
+	private DecodifyMessage dm = new DecodifyMessage();
+	private VDC vdc;
 		
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
-		DecodifyMessage dm = new DecodifyMessage();
 		DataBase db = DataBase.getInstance();
-		VDC vdc;
 		String request = e.getRequestMethod();
 		String response;
 		
@@ -40,7 +41,12 @@ public class VDCHandler implements HttpHandler{
 				e1.printStackTrace();
 			}
 			ErrorCheck ec = dm.startParse(vdc);
-			resRequest(ec,e,"POST","");			
+			try {
+				resRequest(ec,e,"POST","");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}			
 			
 			e.close();
 		}
@@ -127,7 +133,7 @@ public class VDCHandler implements HttpHandler{
 		}
 	}
 	
-	private void resRequest(ErrorCheck ec, HttpExchange e, String method, String getResponse) throws IOException{
+	private void resRequest(ErrorCheck ec, HttpExchange e, String method, String getResponse) throws IOException, SQLException{
 		String response;
 		Headers header = e.getResponseHeaders();
 		if(ec.equals(ErrorCheck.ALL_OK) && method.equals("GET"))
@@ -136,8 +142,10 @@ public class VDCHandler implements HttpHandler{
 			header.add("Content-Type","text/plain");
 			
 		if(ec.equals(ErrorCheck.ALL_OK)){
-			if(method.equals("POST"))
+			if(method.equals("POST")){
 				response = "VDC REGISTERED";
+				dm.saveVDC(vdc);
+			}
 			else if(method.equals("DELETE"))
 				response = "VDC DELETED";
 			else
@@ -149,18 +157,22 @@ public class VDCHandler implements HttpHandler{
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
 			response = "ALL VLINK FIELDS REQUIRED";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
 			response = "ALL VM FIELDS REQUIRED";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
 			response = "ALL VNODE FIELDS REQUIRED";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG)){
+			dm.rollbackVDC(vdc);
 			response = "TO OR FROM(VNODE) PARAMETER OF VLINK IS NOT WELL DEFINED";
 			e.sendResponseHeaders(400, response.length());
 		}

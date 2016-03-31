@@ -44,7 +44,7 @@ public class VMS {
 	}*/
 	
 	public void printInfo(){
-		System.out.println("id : " + id + " label : " + label + " flavor : " + flavorID + " image : " + imageID);
+		System.out.println(" label : " + label + " flavor : " + flavorID + " image : " + imageID);
 	}
 	
 	public ErrorCheck check_vm(){
