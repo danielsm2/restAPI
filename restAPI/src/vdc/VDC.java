@@ -82,6 +82,8 @@ public class VDC {
 			ps.executeUpdate();
 			System.out.println("update vnode");
 		}
+		for(vNodes aux : vnodes)
+			aux.assignIDtoVM();
 		vnodes.get(i).updateVM();
 	}
 	
@@ -115,10 +117,22 @@ public class VDC {
 	}
 	
 	private ErrorCheck validateVnode(String to, String from){
-		if(vnodes.contains(to) && vnodes.contains(from))
+		boolean retVal1 = false;
+		boolean retVal2 = false;
+		for( vNodes aux : vnodes ){
+			if(aux.getId().equals(to))
+				retVal1 = true;
+			else if(aux.getId().equals(from))
+				retVal2 = true;
+		}
+		if(retVal1 && retVal2)
 			return ErrorCheck.ALL_OK;
 		else
 			return ErrorCheck.VNODE_FROM_VLINK_WRONG;
+		/*if(vnodes.contains(to) && vnodes.contains(from))
+			return ErrorCheck.ALL_OK;
+		else
+			return ErrorCheck.VNODE_FROM_VLINK_WRONG;*/
 	}
 	
 	/**
@@ -180,7 +194,7 @@ public class VDC {
 	 * @return
 	 */
 	public ErrorCheck checkVDC(){
-		if(tenantID.isEmpty()){
+		if(tenantID.isEmpty() || tenantID == null){
 			return ErrorCheck.VDC_NOT_COMPLETED;
 		}	
 		else{
@@ -255,5 +269,4 @@ public class VDC {
 	public String getIdVlink(int i){
 		return vlinks.get(i).getId();
 	}
-	
 }

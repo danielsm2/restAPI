@@ -76,7 +76,7 @@ public class vNodes {
 	}
 	
 	public ErrorCheck check_vnode(){
-		if(id.isEmpty() || label.isEmpty())
+		if(id.isEmpty() || label.isEmpty() || id == null || label == null)
 			return ErrorCheck.VNODE_NOT_COMPLETED;
 		ErrorCheck ec;
 		for(VMS aux : vms){
@@ -98,5 +98,10 @@ public class vNodes {
 			System.err.println(e);
 		}
 		return true;
+	}
+	public void assignIDtoVM(){
+		int count = 0;
+		for(VMS aux : vms)
+			aux.setId(id + Integer.toString(count++));
 	}
 }

@@ -46,7 +46,8 @@ public class VMS {
 	}
 	
 	public ErrorCheck check_vm(){
-		if(id.isEmpty() || label.isEmpty() || flavorID.isEmpty() || imageID.isEmpty()){
+		if(label.isEmpty() || flavorID.isEmpty() || imageID.isEmpty() ||
+				label == null || flavorID == null || imageID == null){
 			return ErrorCheck.VM_NOT_COMPLETED;
 		}
 		return ErrorCheck.ALL_OK;
@@ -64,7 +65,7 @@ public class VMS {
 		return true;
 	}
 	
-	public void update(){
-		
+	public void setId(String id){
+		this.id = id;
 	}
 }

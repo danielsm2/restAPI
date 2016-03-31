@@ -47,7 +47,8 @@ public class vLinks{
 	}
 	
 	public ErrorCheck check_vlink() {
-		if(id.isEmpty() || bandwith.isEmpty() || to.isEmpty() || from.isEmpty()){
+		if(id.isEmpty() || id == null || bandwith.isEmpty() || bandwith == null ||
+				to.isEmpty() || to == null || from.isEmpty() || from == null){
 			return ErrorCheck.VLINK_NOT_COMPLETED;
 		}
 		return ErrorCheck.ALL_OK;
