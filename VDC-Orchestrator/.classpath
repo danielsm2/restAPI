@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="/home/apages/Escriptori/Working_directory/Cosign/VDC/gson-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/apages/Escriptori/Working_directory/Cosign/VDC/jsch-0.1.53.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

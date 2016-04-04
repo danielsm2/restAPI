@@ -109,17 +109,26 @@ public class JsonParser {
 			while (reader.hasNext()) {
 				reader.beginObject();
 				String name = null;
+				boolean insert = false;
 				while(reader.hasNext()) {
 					String n = reader.nextName();
 					if(n.equals("host_name")) {
 						name = reader.nextString();
+					}
+					else if(n.equals("service")) {
+						String service = reader.nextString();
+						if(service.equals("compute"))
+							insert = true;
+						else
+							insert = false;
 					}
 					else {
 						reader.skipValue();
 					}
 				}
 				reader.endObject();
-				hosts.add(new Host(name));
+				if(insert)
+					hosts.add(new Host(name));
 			}
 			reader.endArray();
 			reader.endObject();
@@ -151,6 +160,7 @@ public class JsonParser {
 				int c = 0;
 				double d = 0;
 				double m = 0;
+				String project = null;
 				while(reader.hasNext()) {
 					String n = reader.nextName();
 					if (n.equals("cpu")) {
@@ -160,23 +170,23 @@ public class JsonParser {
 					} else if(n.equals("memory_mb")){
 						m = reader.nextDouble();
 					} else if(n.equals("project")) {
-						String project = reader.nextString();
-						if(project.equals("(total)")) {
-							cpu = c;
-							disk = d;
-							memory = m;
-						} else if (project.equals("(used_now)")) {
-							cpu_used = c;
-							disk_used = d;
-							memory_used = m;
-						}
-						
+						project = reader.nextString();
 					} else {
 						reader.skipValue();
 					}
 				}
 				reader.endObject();
 				reader.endObject();
+				if(project.equals("(total)")){
+					cpu = c;
+					disk = d;
+					memory = m;
+				} else if(project.equals("(used_now)")){
+					cpu_used = c;
+					disk_used = d;
+					memory_used = m;
+				}
+				
 			}
 			host.setCpus(cpu-cpu_used);
 			host.setDisk(disk-disk_used);

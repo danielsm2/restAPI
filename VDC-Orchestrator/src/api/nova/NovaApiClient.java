@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import utils.JsonParser;
+import vdc.VM;
 
 public class NovaApiClient {
 	
@@ -118,9 +119,7 @@ public class NovaApiClient {
 	            in.close();
 	            
 	            String json = response.toString();
-	            
-	            System.out.println(json);
-	            
+	            	            
 	            hosts = parser.readHostList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
 	            
 	            Iterator<Host> iterator = hosts.iterator();
@@ -169,5 +168,11 @@ public class NovaApiClient {
 		}
 		
 		return hosts;
+	}
+	
+	public String createVM(VM vm){
+		String id = null;
+		
+		return id;
 	}
 }

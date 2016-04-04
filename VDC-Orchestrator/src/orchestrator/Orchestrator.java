@@ -9,6 +9,7 @@ import api.nova.Flavor;
 import api.nova.Host;
 import api.nova.NovaApiClient;
 import utils.JsonParser;
+import utils.SSHclient;
 
 public class Orchestrator {
 
@@ -19,7 +20,7 @@ public class Orchestrator {
 			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), "admin", "admin");
 			horizonapi.start();*/
 			
-			JsonParser parser = new JsonParser();
+			/*JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
 			String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
@@ -33,11 +34,17 @@ public class Orchestrator {
 			
 			ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
 			
-			System.out.println(hosts.toString());
+			System.out.println(hosts.toString());*/
+			
+			SSHclient ssh = new SSHclient();
+			
+			ssh.connect("apages", "84.88.32.238", 15978, "raist666");
+			String output = ssh.ExecuteIfconfig();
+			System.out.println(output);
+			ssh.disconnect();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 }
