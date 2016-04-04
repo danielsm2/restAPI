@@ -17,92 +17,56 @@ import vdc.ErrorCheck;
 import vdc.VDC;
 
 public class VDCHandler implements HttpHandler{
+	
+	private DecodifyMessage dm = new DecodifyMessage();
+	private VDC vdc;
 		
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
-		DecodifyMessage dm = new DecodifyMessage();
 		DataBase db = DataBase.getInstance();
-		VDC vdc;
 		String request = e.getRequestMethod();
 		String response;
 		
 		if(request.equals("POST")){
-			Headers header = e.getResponseHeaders();
-			header.add("Content-Type","text/plain");
 			
 			InputStream is = e.getRequestBody();
 			@SuppressWarnings("resource")
 			String message = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
 
 			vdc = parser.fromJson(message);
+			try {
+				db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			ErrorCheck ec = dm.startParse(vdc);
-						
-			if(ec.equals(ErrorCheck.ALL_OK)){
-				response = "VDC REGISTERED";
-				e.sendResponseHeaders(201, response.length());
-			}
-			else if(ec.equals(ErrorCheck.VDC_NOT_COMPLETED)){
-				response = "TENANTID IS REQUIRED";
-				e.sendResponseHeaders(400, response.length());
-			}
-			else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
-				response = "ALL VLINK FIELDS ARE REQUIRED";
-				e.sendResponseHeaders(400, response.length());
-			}
-			else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
-				response = "ALL VM FIELDS ARE REQUIRED";
-				e.sendResponseHeaders(400, response.length());
-			}
-			else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
-				response = "ALL VNODE FIELDS ARE REQUIRED";
-				e.sendResponseHeaders(400, response.length());
-			}
-			else{
-				response = "ERROR";
-				e.sendResponseHeaders(500, response.length());
-			}
+			try {
+				resRequest(ec,e,"POST","");
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}			
 			
-			OutputStream os = e.getResponseBody();
-			os.write(response.getBytes());
-			
-			os.close();
 			e.close();
 		}
 		else if(request.equals("DELETE")){
-			Headers headers = e.getResponseHeaders();
-			headers.add("Content-Type","text/plain");
-			OutputStream os = e.getResponseBody();
 			String query = e.getRequestURI().getQuery();
 
 			try {
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
 					ErrorCheck ec = db.showDB(new VDC(), "vdc", tenant, "delete");
-					if(ec.equals(ErrorCheck.ALL_OK)){
-						response = "DELETED VDC";
-						e.sendResponseHeaders(200, response.length());
-					}
-					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-						response = "TENANTID IS NOT FOUND";
-						e.sendResponseHeaders(404, response.length());
-					}
-					else{
-						response = "ERROR";
-						e.sendResponseHeaders(500, response.length());
-					}
+					resRequest(ec,e,"DELETE","");
 				}
-				else{
-					response = "TENANTID PARAMETER IS REQUIRED";
-					e.sendResponseHeaders(400, response.length());
-				}
+				else
+					resRequest(ErrorCheck.TENANTID_REQUIRED,e,"DELETE","");
 				
-				os.write(response.getBytes());
-				os.close();
 				e.close();
 			} catch (SQLException e1) {
 				response = "ERROR";
 				e.sendResponseHeaders(500, response.length());
+				OutputStream os = e.getResponseBody();
 				os.write(response.getBytes());
 
 				os.close();
@@ -111,34 +75,21 @@ public class VDCHandler implements HttpHandler{
 			}
 		}
 		else if(request.equals("GET")){
-			Headers headers = e.getResponseHeaders();
-			headers.add("Content-Type","application/json");
 			vdc = new VDC();
-			OutputStream os = e.getResponseBody();
 			String query = e.getRequestURI().getQuery();
 			try {
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
 					ErrorCheck ec = db.showDB(vdc, "vdc", tenant, "get");
 					response = parser.toJson(vdc);
-					if(ec.equals(ErrorCheck.ALL_OK)){
-						e.sendResponseHeaders(200, response.length());
-					}
-					else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-						response = "TENANTID GIVEN IS NOT FOUND";
-						e.sendResponseHeaders(404, response.length());
-					}
+					resRequest(ec,e,"GET",response);
 				}
-				else{
-					response = "TENANTID PARAMETER IS REQUIRED";
-					e.sendResponseHeaders(400, response.length());
-				}
+				else
+					resRequest(ErrorCheck.TENANTID_REQUIRED,e,"GET","");
 				
-				os.write(response.getBytes());
-				os.close();
 				e.close();
-				
 			} catch (SQLException e1) {
+				OutputStream os = e.getResponseBody();
 				response = "ERROR";
 				e.sendResponseHeaders(500, response.length());
 				os.write(response.getBytes());
@@ -180,5 +131,67 @@ public class VDCHandler implements HttpHandler{
 		else{
 			return "";
 		}
+	}
+	
+	private void resRequest(ErrorCheck ec, HttpExchange e, String method, String getResponse) throws IOException, SQLException{
+		String response;
+		Headers header = e.getResponseHeaders();
+		if(ec.equals(ErrorCheck.ALL_OK) && method.equals("GET"))
+			header.add("Content-Type","application/json");
+		else		
+			header.add("Content-Type","text/plain");
+			
+		if(ec.equals(ErrorCheck.ALL_OK)){
+			if(method.equals("POST")){
+				response = "VDC REGISTERED";
+				dm.saveVDC(vdc);
+			}
+			else if(method.equals("DELETE"))
+				response = "VDC DELETED";
+			else
+				response = getResponse;
+			e.sendResponseHeaders(201, response.length());
+		}
+		else if(ec.equals(ErrorCheck.VDC_NOT_COMPLETED)){
+			response = "TENANTID IS REQUIRED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
+			response = "ALL VLINK FIELDS REQUIRED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
+			response = "ALL VM FIELDS REQUIRED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
+			dm.rollbackVDC(vdc);
+			response = "ALL VNODE FIELDS REQUIRED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG)){
+			dm.rollbackVDC(vdc);
+			response = "TO OR FROM(VNODE) PARAMETER OF VLINK IS NOT WELL DEFINED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
+			response = "TENANTID NOT FOUND";
+			e.sendResponseHeaders(404, response.length());
+		}
+		else if(ec.equals(ErrorCheck.TENANTID_REQUIRED)){
+			response = "TENANTID REQUIRED";
+			e.sendResponseHeaders(400, response.length());
+		}
+		else{
+			response = "ERROR";
+			e.sendResponseHeaders(500, response.length());
+		}
+		
+		OutputStream os = e.getResponseBody();
+		os.write(response.getBytes());
+		
+		os.close();
 	}
 }

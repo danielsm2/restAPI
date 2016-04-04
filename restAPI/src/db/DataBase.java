@@ -24,12 +24,12 @@ public class DataBase {
 	
 	private String queryVDC = "SELECT tenantID FROM vdc WHERE tenantID=?";
 	private String queryVNODE = "SELECT * FROM vnode WHERE fk_vdc=?";
-	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=? OR fk_from=?";
+	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=?";
 	private String queryVM = "SELECT * FROM vm WHERE fk_vnode=?";
 	
 	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
 	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
-	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=? OR fk_from=?";
+	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=?";
 	private String deleteVM = "DELETE FROM vm WHERE fk_vnode=?";
 
 
@@ -171,7 +171,7 @@ public class DataBase {
 			while(rs.next()){
 				if(request.equals("get")){
 					vNodes vnode = vdc.getVnode(foreignKey);
-					vnode.addVM(new VMS(rs.getString("id"),rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
+					vnode.addVM(new VMS(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
 					System.out.println("delete vm");
@@ -185,7 +185,6 @@ public class DataBase {
 		else if(level.equals("vlink")){
 			ps = prepareStatement(queryVLINK);
 			ps.setString(1, foreignKey);
-			ps.setString(2, foreignKey);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get"))
@@ -194,7 +193,6 @@ public class DataBase {
 					System.out.println("delete vlink");
 					PreparedStatement aux = prepareStatement(deleteVLINK);
 					aux.setString(1, foreignKey);
-					aux.setString(2, foreignKey);
 					aux.executeUpdate();
 				}		
 			}

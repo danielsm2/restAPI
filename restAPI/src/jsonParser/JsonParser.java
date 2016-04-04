@@ -30,6 +30,5 @@ public class JsonParser {
 		vdc.printInfo();
 			
 		return vdc;
-		
 	}
 }

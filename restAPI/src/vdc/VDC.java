@@ -24,12 +24,12 @@ public class VDC {
 	}
 	
 	public void addLinks(vLinks vlinks){
-		boolean introduce = true;
+		/*boolean introduce = true;
 		for(vLinks aux : this.vlinks){
 			if(vlinks.getId().equals(aux.getId()))
 				introduce = false;	
 		}
-		if(introduce)
+		if(introduce)*/
 			this.vlinks.add(vlinks);
 	}
 	
@@ -82,6 +82,8 @@ public class VDC {
 			ps.executeUpdate();
 			System.out.println("update vnode");
 		}
+		for(vNodes aux : vnodes)
+			aux.assignIDtoVM();
 		vnodes.get(i).updateVM();
 	}
 	
@@ -91,9 +93,10 @@ public class VDC {
 	 * @param insert = Si true: insert, sino update
 	 * @throws SQLException
 	 */
-	public void updateVlink(int i, boolean insert) throws SQLException{
+	public ErrorCheck updateVlink(int i, boolean insert) throws SQLException{
 		DataBase db = DataBase.getInstance();
-		if(insert){
+		ErrorCheck ec = validateVnode(vlinks.get(i).getDestination(),vlinks.get(i).getSource());
+		if(insert && ec.equals(ErrorCheck.ALL_OK)){
 			String id = vlinks.get(i).getId();
 			String bandwith = vlinks.get(i).getBandwith();
 			String to = vlinks.get(i).getDestination();
@@ -101,7 +104,7 @@ public class VDC {
 			db.newEntryDB("INSERT INTO vlink VALUES ('" + id + "','" + bandwith + "','" + to + "','" +from + "')");
 			System.out.println("insert vlink");
 		}
-		else{
+		else if(!insert && ec.equals(ErrorCheck.ALL_OK)){
 			PreparedStatement ps = db.prepareStatement("UPDATE vlink SET bandwith=?,fk_to=?,fk_from=? WHERE id=?");
 			ps.setString(1, vlinks.get(i).getBandwith());
 			ps.setString(2, vlinks.get(i).getDestination());
@@ -110,6 +113,26 @@ public class VDC {
 			ps.executeUpdate();
 			System.out.println("update vlink");
 		}
+		return ec;
+	}
+	
+	private ErrorCheck validateVnode(String to, String from){
+		boolean retVal1 = false;
+		boolean retVal2 = false;
+		for( vNodes aux : vnodes ){
+			if(aux.getId().equals(to))
+				retVal1 = true;
+			else if(aux.getId().equals(from))
+				retVal2 = true;
+		}
+		if(retVal1 && retVal2)
+			return ErrorCheck.ALL_OK;
+		else
+			return ErrorCheck.VNODE_FROM_VLINK_WRONG;
+		/*if(vnodes.contains(to) && vnodes.contains(from))
+			return ErrorCheck.ALL_OK;
+		else
+			return ErrorCheck.VNODE_FROM_VLINK_WRONG;*/
 	}
 	
 	/**
@@ -171,7 +194,7 @@ public class VDC {
 	 * @return
 	 */
 	public ErrorCheck checkVDC(){
-		if(tenantID.isEmpty()){
+		if(tenantID.isEmpty() || tenantID == null){
 			return ErrorCheck.VDC_NOT_COMPLETED;
 		}	
 		else{
@@ -246,5 +269,4 @@ public class VDC {
 	public String getIdVlink(int i){
 		return vlinks.get(i).getId();
 	}
-	
 }

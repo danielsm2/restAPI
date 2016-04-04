@@ -5,13 +5,15 @@ import java.sql.SQLException;
 
 public class VMS {
 
-    private String id;
+    private transient String id;
 	private String label;
 	private String flavorID;
 	private String imageID;
+    private transient String memory;
+	private transient String disk;
+	private transient String cpus;
 	
-	public VMS(String id, String label, String flavor, String image){
-		this.id = id;
+	public VMS(String label, String flavor, String image){
 		this.label = label;
 		this.flavorID = flavor;
 		this.imageID = image;
@@ -42,11 +44,12 @@ public class VMS {
 	}*/
 	
 	public void printInfo(){
-		System.out.println("id : " + id + " label : " + label + " flavor : " + flavorID + " image : " + imageID);
+		System.out.println(" label : " + label + " flavor : " + flavorID + " image : " + imageID);
 	}
 	
 	public ErrorCheck check_vm(){
-		if(id.isEmpty() || label.isEmpty() || flavorID.isEmpty() || imageID.isEmpty()){
+		if(label.isEmpty() || flavorID.isEmpty() || imageID.isEmpty() ||
+				label == null || flavorID == null || imageID == null){
 			return ErrorCheck.VM_NOT_COMPLETED;
 		}
 		return ErrorCheck.ALL_OK;
@@ -64,7 +67,19 @@ public class VMS {
 		return true;
 	}
 	
-	public void update(){
-		
+	public void setId(String id){
+		this.id = id;
+	}
+	
+	public void setCPU(String cpu){
+		this.cpus = cpu;
+	}
+	
+	public void setMem(String memory){
+		this.memory = memory;
+	}
+	
+	public void setDisk(String disk){
+		this.disk = disk;
 	}
 }
