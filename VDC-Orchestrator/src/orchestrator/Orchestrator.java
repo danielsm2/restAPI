@@ -38,7 +38,7 @@ public class Orchestrator {
 			
 			SSHclient ssh = new SSHclient();
 			
-			ssh.connect("apages", "84.88.32.238", 15978, "raist666");
+			ssh.connect("root", "localhost", 15978, "root");
 			String output = ssh.ExecuteIfconfig();
 			System.out.println(output);
 			ssh.disconnect();
