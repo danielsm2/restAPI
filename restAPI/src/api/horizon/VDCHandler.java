@@ -99,7 +99,7 @@ public class VDCHandler implements HttpHandler{
 				e1.printStackTrace();
 			}
 		}
-		else if(request.equals("PUT") || request.equals("HEAD") || request.equals("OPTIONS")){
+		else {
 			Headers headers = e.getResponseHeaders();
 			headers.add("Content-Type","text/plain");
 			OutputStream os = e.getResponseBody();

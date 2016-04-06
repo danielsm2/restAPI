@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.stream.JsonReader;
 
@@ -98,9 +100,9 @@ public class JsonParser {
 		}
 	}
 	
-	public ArrayList<Host> readHostList(InputStream in) throws IOException {
+	public Map<String,Host> readHostList(InputStream in) throws IOException {
 		
-		ArrayList<Host> hosts = new ArrayList<Host>(0);
+		Map<String,Host> hosts = new HashMap<String,Host>(0);
 		try {
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 			reader.beginObject();
@@ -128,7 +130,8 @@ public class JsonParser {
 				}
 				reader.endObject();
 				if(insert)
-					hosts.add(new Host(name));
+					//hosts.add(new Host(name));
+					hosts.put(name, new Host());
 			}
 			reader.endArray();
 			reader.endObject();

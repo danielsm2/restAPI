@@ -2,19 +2,23 @@ package api.nova;
 
 public class Host {
 	
-	private String name;
+	//private String name;
 	private int cpus;
 	private double disk;
 	private double memory;
+	private String mac;
 	
-	public Host(String name, int cpus, double disk, double memory) {
-		this.name = name;
+	public Host(){}
+	
+	public Host(int cpus, double disk, double memory) {
+		//this.name = name;
 		this.cpus = cpus;
 		this.disk = disk;
 		this.memory = memory;
+		this.mac = "";
 	}
 
-	public Host(String name) {
+	/*public Host(String name) {
 		this.name = name;
 	}
 
@@ -24,7 +28,7 @@ public class Host {
 
 	public void setName(String name) {
 		this.name = name;
-	}
+	}*/
 
 	public int getCpus() {
 		return cpus;
@@ -49,9 +53,18 @@ public class Host {
 	public void setMemory(double memory) {
 		this.memory = memory;
 	}
+	
+	public String getMac(){
+		return this.mac;
+	}
+	
+	public void setMac(String mac){
+		this.mac = mac;
+	}
 
 	@Override
 	public String toString() {
-		return "Host [name=" + name + ", cpus=" + cpus + ", disk=" + disk + ", memory=" + memory + "]";
+		//return "Host [name=" + name + ", cpus=" + cpus + ", disk=" + disk + ", memory=" + memory + "]";
+		return "[cpus=" + cpus + ", disk=" + disk + ", memory=" + memory + " mac=" + mac + "]";
 	}
 }
