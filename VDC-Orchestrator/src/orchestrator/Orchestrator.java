@@ -51,14 +51,12 @@ public class Orchestrator {
 			while(rs.next()){
 				if(hosts.containsKey(rs.getString("host"))){
 					aux = hosts.get(rs.getString("host"));
-					ssh.connect("dsanchez","localhost"/*rs.getString("host_ip")*/,22,"daniel2");
+					ssh.connect("admin",rs.getString("host_ip"),22,"admin");
 					String output = ssh.ExecuteIfconfig();
 					Map<String,String> mac = checkMac(output, aux);
 					for(Entry<String, String> set : mac.entrySet()){
-						if(!set.getKey().equals("127.0.0.1")){
-							if (!set.getKey().equals(rs.getString("host_ip")))
+						if(!set.getKey().equals("127.0.0.1") && !set.getKey().equals(rs.getString("host_ip")))
 								aux.setMac(set.getValue());
-						}
 					}
 					//System.out.println(output);
 					//aux.setMac(rs.getString("host_ip"));
