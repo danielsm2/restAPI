@@ -31,17 +31,17 @@ public class Orchestrator {
 			JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
+			String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
 			
-			System.out.println(token);
+			//System.out.println(token);
 			
 			NovaApiClient novaapi = new NovaApiClient();
-			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://localhost:8774", token, parser);
+			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser);
 			
 			System.out.println(flavors.toString());*/
 			
 			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
-			Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
+			Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser);
 			NovaDB db = NovaDB.getInstance();
 			db.startDB();
 			ResultSet rs = db.queryDB();
@@ -51,7 +51,7 @@ public class Orchestrator {
 			while(rs.next()){
 				if(hosts.containsKey(rs.getString("host"))){
 					aux = hosts.get(rs.getString("host"));
-					ssh.connect("admin",rs.getString("host_ip"),22,"admin");
+					ssh.connect("stack",rs.getString("host_ip"),22,"stack");
 					String output = ssh.ExecuteIfconfig();
 					Map<String,String> mac = checkMac(output, aux);
 					for(Entry<String, String> set : mac.entrySet()){
@@ -61,12 +61,12 @@ public class Orchestrator {
 					//System.out.println(output);
 					//aux.setMac(rs.getString("host_ip"));
 				}
+				ssh.disconnect();
 			}
-			ssh.disconnect();
 			for(Entry<String, Host> host : hosts.entrySet()){
 				  System.out.println("Host name=" + host.getKey() + ", Host_info " + host.getValue().toString());
 			}
-			
+			db.stopDB();
 			
 			//System.out.println(hosts.toString());
 			
@@ -96,7 +96,9 @@ public class Orchestrator {
 			if(res[i].contains("HW"))
 				mac = res[i+1];
 			else if(res[i].contains("inet") && !res[i].contains("inet6")){
-				ip = res[i].split(":")[1];
+				System.out.println("salida: "+res[i]);
+				ip = res[i+1];
+				ip = ip.split(":")[1];
 				setMac.put(ip, mac);
 				mac = ip = "";
 			}
