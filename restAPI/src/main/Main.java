@@ -11,8 +11,8 @@ public class Main {
 	{
 		DataBase db = DataBase.getInstance();
 		db.startDB();
-		System.out.println("Prepared to get request...");
-		Controller c = new Controller(new InetSocketAddress("localhost",12119),0);
+		Controller c = new Controller(new InetSocketAddress("0.0.0.0",12119),0);
 		c.start();
+		System.out.println("Server is listening...");
 	}
 }
