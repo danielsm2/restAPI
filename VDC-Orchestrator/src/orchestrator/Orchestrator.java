@@ -16,6 +16,7 @@ import api.nova.Flavor;
 import api.nova.Host;
 import api.nova.NovaApiClient;
 import db.NovaDB;
+import tenant.Tenant;
 import utils.JsonParser;
 import utils.SSHclient;
 
@@ -31,17 +32,25 @@ public class Orchestrator {
 			JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
-			
-			//System.out.println(token);
-			
+			//String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
+			String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
+			System.out.println(token);
+
+			List<Tenant> tenants = keystoneapi.getTenant("http://localhost:5000", token);
+			String id = "";
+			for(Tenant aux : tenants){
+				if(aux.getName().equals("admin"))
+					id = aux.getId();
+			}
 			NovaApiClient novaapi = new NovaApiClient();
 			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser);
 			
 			System.out.println(flavors.toString());*/
 			
 			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
-			Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser);
+			//Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
+			Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
+			
 			NovaDB db = NovaDB.getInstance();
 			db.startDB();
 			ResultSet rs = db.queryDB();
@@ -51,15 +60,13 @@ public class Orchestrator {
 			while(rs.next()){
 				if(hosts.containsKey(rs.getString("host"))){
 					aux = hosts.get(rs.getString("host"));
-					ssh.connect("stack",rs.getString("host_ip"),22,"stack");
-					String output = ssh.ExecuteIfconfig();
+					ssh.connect("dsanchez","localhost"/*rs.getString("host_ip")*/,22,"daniel2");					
+					String[] output = ssh.ExecuteIfconfig();
 					Map<String,String> mac = checkMac(output, aux);
 					for(Entry<String, String> set : mac.entrySet()){
 						if(!set.getKey().equals("127.0.0.1") && !set.getKey().equals(rs.getString("host_ip")))
 								aux.setMac(set.getValue());
 					}
-					//System.out.println(output);
-					//aux.setMac(rs.getString("host_ip"));
 				}
 				ssh.disconnect();
 			}
@@ -82,25 +89,29 @@ public class Orchestrator {
 		}
 	}
 	
-	private static Map<String,String> checkMac(String output, Host host){
-		/*Pattern pattern = Pattern.compile("*HW*");
-		Matcher m = pattern.matcher(output);
-		if(m.find()){
-			System.out.print(m.group());
-		}*/
+	private static Map<String,String> checkMac(String[] output, Host host){
 		Map<String,String> setMac = new HashMap<String,String>();
-		String res[] = output.split(" ");
 		String mac = "";
 		String ip = "";
-		for (int i = 0; i < res.length; ++i){
-			if(res[i].contains("HW"))
-				mac = res[i+1];
-			else if(res[i].contains("inet") && !res[i].contains("inet6")){
-				System.out.println("salida: "+res[i]);
-				ip = res[i+1];
-				ip = ip.split(":")[1];
-				setMac.put(ip, mac);
-				mac = ip = "";
+		String[] res;
+		for (int i = 0; i < output.length; ++i){
+			if(output[i].contains("HW")){
+				res = output[i].split(" ");
+				for(int j = 0; j < res.length; ++j){
+					if(res[j].contains("HW")){
+						mac = res[j+1];
+					}
+				}
+			}
+			else if(output[i].contains("inet") && !output[i].contains("inet6")){
+				res = output[i].split(" ");
+				for(int j = 0; j < res.length; ++j){
+					if(res[j].contains("inet")){
+						ip = res[11].split(":")[1];
+						setMac.put(ip, mac);
+						mac = ip = "";
+					}
+				}
 			}
 		}
 		return setMac;

@@ -33,7 +33,7 @@ public class SSHclient {
 		session.disconnect();
 	}
 	
-	public String ExecuteIfconfig(){		
+	public String[] ExecuteIfconfig(){		
 		StringBuilder outputBuffer = new StringBuilder();
 		
 		try {
@@ -55,6 +55,6 @@ public class SSHclient {
 			e.printStackTrace();
 		}
 		
-		return outputBuffer.toString();
+		return outputBuffer.toString().split("\n");
 	}
 }

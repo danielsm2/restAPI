@@ -5,12 +5,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
 import api.nova.Flavor;
 import api.nova.Host;
+import tenant.Tenant;
+import tenant.TenantList;
+import vdc.VDC;
 
 public class JsonParser {
 
@@ -201,5 +206,12 @@ public class JsonParser {
 		} finally {
 			reader.close();
 		}
+	}
+	
+	public List<Tenant> getTenants(String json){
+		Gson gson = new Gson();
+		TenantList tenants = (TenantList) gson.fromJson(json, TenantList.class);
+			
+		return tenants.getTenants();
 	}
 }

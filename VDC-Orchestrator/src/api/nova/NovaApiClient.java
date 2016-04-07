@@ -103,7 +103,7 @@ public class NovaApiClient {
 		HttpURLConnection connection = null;
 		
 		try {
-			URL url = new URL(novacontrollerurl+"/v2.1/os-hosts"); //TODO TenantID
+			URL url = new URL(novacontrollerurl+"/v2.1/" + id + "os-hosts"); //TODO TenantID
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("X-Auth-Token", token);
@@ -173,14 +173,14 @@ public class NovaApiClient {
 		return hosts;
 	}*/
 	
-public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonParser parser) {
+public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonParser parser, String id) {
 		
 		Map<String,Host> hosts = new HashMap<String,Host>();
 		
 		HttpURLConnection connection = null;
-		
+				
 		try {
-			URL url = new URL(novacontrollerurl+"/v2.1/5692d495abe741b09f6a3e9b817e1336/os-hosts"); //TODO TenantID
+			URL url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts"); //TODO TenantID
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("X-Auth-Token", token);
@@ -204,7 +204,7 @@ public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonPar
 	            
 	            //Iterator<Host> iterator = hosts.iterator();
 	            for(Entry<String, Host> aux : hosts.entrySet()){
-	            	url = new URL(novacontrollerurl+"/v2.1/5692d495abe741b09f6a3e9b817e1336/os-hosts/"+aux.getKey()); //TODO TenantID
+	            	url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts/"+aux.getKey()); //TODO TenantID
 	    			connection = (HttpURLConnection)url.openConnection();
 	    			connection.setRequestMethod("GET");
 	    			connection.setRequestProperty("X-Auth-Token", token);
