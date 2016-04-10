@@ -24,13 +24,7 @@ public class VDC {
 	}
 	
 	public void addLinks(vLinks vlinks){
-		/*boolean introduce = true;
-		for(vLinks aux : this.vlinks){
-			if(vlinks.getId().equals(aux.getId()))
-				introduce = false;	
-		}
-		if(introduce)*/
-			this.vlinks.add(vlinks);
+		this.vlinks.add(vlinks);
 	}
 	
 	public vNodes getVnode(String id){
@@ -73,14 +67,14 @@ public class VDC {
 			String id = vnodes.get(i).getId();
 			String label = vnodes.get(i).getLabel();
 			db.newEntryDB("INSERT INTO vnode VALUES ('" + id + "','" + label + "','" + tenantID + "')");
-			System.out.println("insert vnode");
+			//System.out.println("insert vnode");
 		}			
 		else{
 			PreparedStatement ps = db.prepareStatement("UPDATE vnode SET label = ? WHERE id= ?");
 			ps.setString(1, vnodes.get(i).getLabel());
 			ps.setString(2, vnodes.get(i).getId());
 			ps.executeUpdate();
-			System.out.println("update vnode");
+			//System.out.println("update vnode");
 		}
 		for(vNodes aux : vnodes)
 			aux.assignIDtoVM();
@@ -102,7 +96,7 @@ public class VDC {
 			String to = vlinks.get(i).getDestination();
 			String from = vlinks.get(i).getSource();
 			db.newEntryDB("INSERT INTO vlink VALUES ('" + id + "','" + bandwith + "','" + to + "','" +from + "')");
-			System.out.println("insert vlink");
+			//System.out.println("insert vlink");
 		}
 		else if(!insert && ec.equals(ErrorCheck.ALL_OK)){
 			PreparedStatement ps = db.prepareStatement("UPDATE vlink SET bandwith=?,fk_to=?,fk_from=? WHERE id=?");
@@ -111,7 +105,7 @@ public class VDC {
 			ps.setString(3, vlinks.get(i).getSource());
 			ps.setString(4, vlinks.get(i).getId());
 			ps.executeUpdate();
-			System.out.println("update vlink");
+			//System.out.println("update vlink");
 		}
 		return ec;
 	}
@@ -129,10 +123,6 @@ public class VDC {
 			return ErrorCheck.ALL_OK;
 		else
 			return ErrorCheck.VNODE_FROM_VLINK_WRONG;
-		/*if(vnodes.contains(to) && vnodes.contains(from))
-			return ErrorCheck.ALL_OK;
-		else
-			return ErrorCheck.VNODE_FROM_VLINK_WRONG;*/
 	}
 	
 	/**

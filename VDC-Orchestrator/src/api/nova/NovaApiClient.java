@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import utils.JsonParser;
-import vdc.VM;
+import vdc.VirtualMachine;
 
 public class NovaApiClient {
 	
@@ -271,7 +271,7 @@ public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonPar
 		return hosts;
 	}
 	
-	public String createVM(VM vm){
+	public String createVM(VirtualMachine vm){
 		String id = null;
 		
 		return id;

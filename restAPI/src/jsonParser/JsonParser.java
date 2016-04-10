@@ -15,7 +15,7 @@ public class JsonParser {
 	public String toJson(VDC vdc){
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(vdc, VDC.class);
-		System.out.println("Print de json creado: " + json);
+		//System.out.println("Print de json creado: " + json);
 		return json;
 	}
 	

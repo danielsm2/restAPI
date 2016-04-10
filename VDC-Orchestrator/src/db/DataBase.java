@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 
 import vdc.ErrorCheck;
 import vdc.VDC;
-import vdc.VMS;
-import vdc.vLinks;
-import vdc.vNodes;
+import vdc.VirtualMachine;
+import vdc.VirtualLink;
+import vdc.VirtualNode;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -138,7 +138,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			if(rs.next()){
 				if(request.equals("get"))
-					vdc.addTenant(rs.getString("tenantID"));
+					vdc.setTenant(rs.getString("tenantID"));
 				showDB(vdc, "vnode", foreignKey, request);
 				if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVDC);
@@ -156,7 +156,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get"))
-					vdc.addNodes(new vNodes(rs.getString("id"), rs.getString("label")));
+					vdc.addNodes(new VirtualNode(rs.getString("id"), rs.getString("label")));
 				showDB(vdc, "vm", rs.getString("id"), request);
 				showDB(vdc, "vlink", rs.getString("id"), request);
 				if(request.equals("delete")){
@@ -173,8 +173,8 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get")){
-					vNodes vnode = vdc.getVnode(foreignKey);
-					vnode.addVM(new VMS(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
+					VirtualNode vnode = vdc.getVnode(foreignKey);
+					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
 					//System.out.println("delete vm");
@@ -191,7 +191,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get"))
-					vdc.addLinks(new vLinks(rs.getString("id"), rs.getString("bandwith"), rs.getString("fk_to"), rs.getString("fk_from")));
+					vdc.addLinks(new VirtualLink(rs.getString("id"), rs.getString("bandwith"), rs.getString("fk_to"), rs.getString("fk_from")));
 				else if(request.equals("delete")){
 					//System.out.println("delete vlink");
 					PreparedStatement aux = prepareStatement(deleteVLINK);

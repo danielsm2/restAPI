@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 import com.sun.net.httpserver.Headers;
@@ -20,11 +21,11 @@ public class VDCHandler implements HttpHandler{
 	
 	private DecodifyMessage dm = new DecodifyMessage();
 	private VDC vdc;
-		
+	private DataBase db = DataBase.getInstance();
+
 	public void handle(HttpExchange e) throws IOException {
 		
 		JsonParser parser = new JsonParser();
-		DataBase db = DataBase.getInstance();
 		String request = e.getRequestMethod();
 		String response;
 		
@@ -33,21 +34,21 @@ public class VDCHandler implements HttpHandler{
 			InputStream is = e.getRequestBody();
 			@SuppressWarnings("resource")
 			String message = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
-
-			vdc = parser.fromJson(message);
-			try {
-				db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
+			List<String> content = e.getRequestHeaders().get("Content-type");
+			try{
+				if(content != null && content.get(0).equals("application/json")){
+					vdc = parser.fromJson(message);
+					db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
+					db.deleteVDC(vdc.getTenant());
+					ErrorCheck ec = dm.startParse(vdc);
+					resRequest(ec,e,"POST","");		
+				}
+				else{
+					resRequest(ErrorCheck.BAD_CONTENT_TYPE,e,"POST","");
+				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			ErrorCheck ec = dm.startParse(vdc);
-			try {
-				resRequest(ec,e,"POST","");
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}			
-			
 			e.close();
 		}
 		else if(request.equals("DELETE")){
@@ -57,6 +58,7 @@ public class VDCHandler implements HttpHandler{
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
 					ErrorCheck ec = db.showDB(new VDC(), "vdc", tenant, "delete");
+					db.deleteVDC(tenant);
 					resRequest(ec,e,"DELETE","");
 				}
 				else
@@ -80,7 +82,15 @@ public class VDCHandler implements HttpHandler{
 			try {
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
-					ErrorCheck ec = db.showDB(vdc, "vdc", tenant, "get");
+					ErrorCheck ec;
+					if(db.checkVDC(tenant)){
+						vdc = db.getLocalVDC(tenant);
+						ec = ErrorCheck.ALL_OK; 
+					}
+					else{
+						 ec = db.showDB(vdc, "vdc", tenant, "get");
+						 db.saveVDC(vdc);
+					}
 					response = parser.toJson(vdc);
 					resRequest(ec,e,"GET",response);
 				}
@@ -103,7 +113,7 @@ public class VDCHandler implements HttpHandler{
 			Headers headers = e.getResponseHeaders();
 			headers.add("Content-Type","text/plain");
 			OutputStream os = e.getResponseBody();
-			response = "REQUEST NOT AVAILABLE";
+			response = "Unsupported method. Server only accepts POST,DELETE and GET operations";
 			e.sendResponseHeaders(400, response.length());
 			os.write(response.getBytes());
 			
@@ -143,49 +153,53 @@ public class VDCHandler implements HttpHandler{
 			
 		if(ec.equals(ErrorCheck.ALL_OK)){
 			if(method.equals("POST")){
-				response = "VDC REGISTERED";
-				dm.saveVDC(vdc);
+				response = "The VDC given has been registered";
+				db.saveVDC(vdc);
 			}
 			else if(method.equals("DELETE"))
-				response = "VDC DELETED";
+				response = "Due to the tenant informed the VDC has been deleted";
 			else
 				response = getResponse;
 			e.sendResponseHeaders(201, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VDC_NOT_COMPLETED)){
-			response = "TENANTID IS REQUIRED";
+			response = "Incorrect content. Tenant id has to be informed";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
-			dm.rollbackVDC(vdc);
-			response = "ALL VLINK FIELDS REQUIRED";
+			db.rollbackVDC(vdc);
+			response = "Incorrect content. All virtual link fields have to be informed";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
-			dm.rollbackVDC(vdc);
-			response = "ALL VM FIELDS REQUIRED";
+			db.rollbackVDC(vdc);
+			response = "Incorrect content. All virtual machina fields have to be informed";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED)){
-			dm.rollbackVDC(vdc);
-			response = "ALL VNODE FIELDS REQUIRED";
+			db.rollbackVDC(vdc);
+			response = "Incorrect content. All virtual node fields have to be informed";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG)){
-			dm.rollbackVDC(vdc);
-			response = "TO OR FROM(VNODE) PARAMETER OF VLINK IS NOT WELL DEFINED";
+			db.rollbackVDC(vdc);
+			response = "Incorrect content. Some of the virtual link fields are not referencing properly to virtual node fields";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else if(ec.equals(ErrorCheck.TENANTID_NOT_FOUND)){
-			response = "TENANTID NOT FOUND";
+			response = "Incorrect content. Tenant id given is not found";
 			e.sendResponseHeaders(404, response.length());
 		}
 		else if(ec.equals(ErrorCheck.TENANTID_REQUIRED)){
-			response = "TENANTID REQUIRED";
+			response = "To correctly proceed with request '" + method + "', tenant id has to be informed";	
+			e.sendResponseHeaders(400, response.length());
+		}
+		else if(ec.equals(ErrorCheck.BAD_CONTENT_TYPE)){
+			response = "Incorrect content type. The server only accepts json files from body performing POST operations";
 			e.sendResponseHeaders(400, response.length());
 		}
 		else{
-			response = "ERROR";
+			response = "Unexpected error. Restart system.";
 			e.sendResponseHeaders(500, response.length());
 		}
 		

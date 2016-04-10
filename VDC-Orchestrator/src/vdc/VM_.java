@@ -8,7 +8,7 @@ package vdc;
  * 
  */
 
-public class VM {
+public class VM_ {
 	
 	/** The ID of the virtual machine. */
 	private String vmID;
@@ -37,7 +37,7 @@ public class VM {
 	 * @param cpus - A integer stating the number of requested cpu cores.
 	 * @param image - A String representing the name of the operating system image.
 	 */
-	public VM(String vmID, String flavor, double memory, double disk, int cpus, String image) {
+	public VM_(String vmID, String flavor, double memory, double disk, int cpus, String image) {
 		this.vmID = vmID;
 		this.flavor = flavor;
 		this.memory = memory;
