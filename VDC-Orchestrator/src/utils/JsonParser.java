@@ -222,7 +222,10 @@ public class JsonParser {
 	 * @return
 	 */
 	public String toJson(VDC vdc){
-		Gson gson = new GsonBuilder().serializeNulls().create();
+		Gson gson = new GsonBuilder()
+				.serializeNulls()
+				.setPrettyPrinting()
+				.create();
 		String json = gson.toJson(vdc, VDC.class);
 		//System.out.println("Print de json creado: " + json);
 		return json;

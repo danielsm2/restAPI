@@ -51,7 +51,7 @@ public class Orchestrator {
 			}
 			NovaApiClient novaapi = new NovaApiClient();
 			*/
-			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser);
+			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
