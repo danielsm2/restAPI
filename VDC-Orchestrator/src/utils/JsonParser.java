@@ -16,6 +16,7 @@ import api.nova.Flavor;
 import api.nova.Host;
 import tenant.Tenant;
 import tenant.TenantList;
+import topology.Topology;
 import vdc.VDC;
 
 public class JsonParser {
@@ -149,7 +150,17 @@ public class JsonParser {
 		
 		return hosts;
 	}
-	
+	public void readTopoly(InputStream in, Topology topology){
+		try{
+			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginObject();
+			reader.beginObject();
+			reader.beginArray();
+			reader.beginObject();
+		}catch(){
+			
+		}
+	}
 	public void readHost(InputStream in, Host host) throws IOException {
 		
 		try {

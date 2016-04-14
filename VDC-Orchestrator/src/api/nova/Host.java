@@ -1,14 +1,23 @@
 package api.nova;
 
-public class Host {
+import topology.Node;
+
+public class Host extends Node{
 	
-	//private String name;
 	private int cpus;
 	private double disk;
 	private double memory;
 	private String mac;
 	
 	public Host(){}
+
+	public Host(String mac){
+		super(mac);
+	}
+	
+	public Host(String id, Node src, Node dest){
+		super(id,src,dest); 
+	}
 	
 	public Host(int cpus, double disk, double memory) {
 		//this.name = name;
