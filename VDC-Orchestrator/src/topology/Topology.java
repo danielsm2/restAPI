@@ -3,15 +3,18 @@ package topology;
 import java.util.ArrayList;
 import java.util.List;
 
+import api.nova.Host;
+
 public class Topology {
 
-	List<Node> topology = new ArrayList<Node>();
+	List<Host> hosts = new ArrayList<Host>();
+	List<Switch> switchs = new ArrayList<Switch>();
 	
-	public void addNode(Node node){
-		topology.add(node);
+	public void addHost(Host host){
+		hosts.add(host);
 	}
 	
-	public List<Node> getTopology(){
-		return topology;
+	public void addSwitch(Switch s){
+		switchs.add(s);
 	}
 }

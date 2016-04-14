@@ -16,6 +16,8 @@ import api.nova.Flavor;
 import api.nova.Host;
 import tenant.Tenant;
 import tenant.TenantList;
+import topology.Node;
+import topology.Switch;
 import topology.Topology;
 import vdc.VDC;
 
@@ -150,15 +152,54 @@ public class JsonParser {
 		
 		return hosts;
 	}
-	public void readTopoly(InputStream in, Topology topology){
+	public void readTopology(InputStream in, Topology topology){
 		try{
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 			reader.beginObject();
+			reader.nextName();
 			reader.beginObject();
+			reader.nextName();
 			reader.beginArray();
 			reader.beginObject();
-		}catch(){
+			reader.nextName();
+			reader.nextName();
+			reader.beginArray();
+
+			while(reader.hasNext()){
+				reader.beginObject();
+				String aux = reader.nextName();
+				if(aux.equals("node-id")){
+					String node_id = reader.nextString();
+					if(node_id.contains("host")){
+						topology.addHost(new Host(node_id.split(":")[1]));
+					}
+					else{
+						topology.addSwitch(new Switch(node_id.split(":")[1]));
+					}
+				}	
+				else{
+					reader.skipValue();
+				}
+				reader.endObject();
+			}
+			reader.endArray();
 			
+			while(reader.hasNext()){
+				reader.beginObject();
+				String aux = reader.nextName();
+				if(aux.equals("link-id")){
+					
+				}
+			}
+			
+			reader.endArray();
+			reader.endObject();
+			reader.endArray();
+			reader.endObject();
+			reader.endObject();
+			
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	public void readHost(InputStream in, Host host) throws IOException {
