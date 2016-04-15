@@ -19,7 +19,7 @@ public class Node {
 	public void setNode(String id){
 		this.id = id;
 	}
-	
+		
 	public String getId(){
 		return id;
 	}

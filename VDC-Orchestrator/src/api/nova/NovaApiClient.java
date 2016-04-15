@@ -202,9 +202,8 @@ public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonPar
 	            	            
 	            hosts = parser.readHostList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
 	            
-	            //Iterator<Host> iterator = hosts.iterator();
 	            for(Entry<String, Host> aux : hosts.entrySet()){
-	            	url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts/"+aux.getKey()); 
+	            	url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts/" + aux.getKey()); 
 	    			connection = (HttpURLConnection)url.openConnection();
 	    			connection.setRequestMethod("GET");
 	    			connection.setRequestProperty("X-Auth-Token", token);

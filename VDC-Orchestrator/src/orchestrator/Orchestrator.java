@@ -1,8 +1,14 @@
 package orchestrator;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +24,7 @@ import api.nova.NovaApiClient;
 import db.DataBase;
 import db.NovaDB;
 import tenant.Tenant;
+import topology.Topology;
 import utils.JsonParser;
 import utils.SSHclient;
 
@@ -26,16 +33,39 @@ public class Orchestrator {
 	public static void main(String[] args) {
 		
 		try {
-			DataBase db = DataBase.getInstance();
+			/*DataBase db = DataBase.getInstance();
 			db.startDB();
 			
 			HorizonApiServer horizonapi = new HorizonApiServer("0.0.0.0",12119,0);
 			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), "admin", "admin");
 			horizonapi.start();
 
-			System.out.println("Server is listening...");
+			System.out.println("Server is listening...");*/
 
-			
+			InputStream is = null;
+			try{
+				System.out.println("Waiting for data");
+				is = System.in;
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				StringBuffer sb = new StringBuffer();
+				String line = null;
+	            while ((line = br.readLine()) != null) {
+	            	if(line.equals("quit"))
+	            		break;
+	                sb.append(line);
+	                System.out.println("Line entered : " + line);
+	            }
+	            br.close();
+	            String json = sb.toString();
+	            
+				System.out.println("Data readed");
+				JsonParser parse = new JsonParser();
+				Topology topology = new Topology();
+				Map<String,Host> h = new Hashtable<String,Host>();
+				parse.readTopology(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), topology, h);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			//JsonParser parser = new JsonParser();
 			
 			//KeystoneApiClient keystoneapi = new KeystoneApiClient();
@@ -58,6 +88,9 @@ public class Orchestrator {
 			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
 			//Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
 			/*Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
+			Topology topology = new Topology();
+			OdlApiClient odlApi = new OdlApiClient();
+			odlApi.getResources(topology,hosts);
 			
 			NovaDB db = NovaDB.getInstance();
 			db.startDB();

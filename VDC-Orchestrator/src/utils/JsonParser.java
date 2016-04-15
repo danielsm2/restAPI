@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,6 +17,7 @@ import api.nova.Flavor;
 import api.nova.Host;
 import tenant.Tenant;
 import tenant.TenantList;
+import topology.Link;
 import topology.Node;
 import topology.Switch;
 import topology.Topology;
@@ -152,8 +154,11 @@ public class JsonParser {
 		
 		return hosts;
 	}
-	public void readTopology(InputStream in, Topology topology){
+	public void readTopology(InputStream in, Topology topology, Map<String, Host> hosts){
 		try{
+			Map<String, Integer> infoNode = new HashMap<String, Integer>();
+			Integer countH = 0;
+			Integer countS = 0;
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 			reader.beginObject();
 			reader.nextName();
@@ -162,35 +167,96 @@ public class JsonParser {
 			reader.beginArray();
 			reader.beginObject();
 			reader.nextName();
-			reader.nextName();
-			reader.beginArray();
+			reader.skipValue();
 
 			while(reader.hasNext()){
-				reader.beginObject();
 				String aux = reader.nextName();
-				if(aux.equals("node-id")){
-					String node_id = reader.nextString();
-					if(node_id.contains("host")){
-						topology.addHost(new Host(node_id.split(":")[1]));
+				if(aux.equals("node")){
+					reader.beginArray();
+					while(reader.hasNext()){
+						reader.beginObject();
+						while(reader.hasNext()){
+							aux = reader.nextName();
+							if(aux.equals("node-id")){						
+								String node_id = reader.nextString();
+								if(node_id.contains("host")){
+									String[] mac = node_id.split(":");
+									String res = mac[1];
+									for(int i = 2; i < mac.length; ++i)
+										res = res + ":" + mac[i];
+									System.out.println("host: " + res);
+									/*for(Entry<String,Host> host : hosts.entrySet()){
+										if(host.getValue().getMac().equals(node_id.split(":")[1])){
+											topology.addHost(new Host(node_id.split(":")[1]));
+											infoNode.put(node_id.split(":")[1], countH++);
+											break;
+										}
+									}*/
+								}
+								else{
+									System.out.println("switch: " + node_id.split(":")[1]);
+									topology.addSwitch(new Switch(node_id.split(":")[1]));
+									infoNode.put(node_id.split(":")[1], countS++);
+								}
+							}
+							else{
+								reader.skipValue();
+							}
+						}
+						reader.endObject();
 					}
-					else{
-						topology.addSwitch(new Switch(node_id.split(":")[1]));
-					}
-				}	
-				else{
+					reader.endArray();
+				}
+				else if(aux.equals("link")){
+					String src = "";
+					String dest = "";
+					reader.beginArray();
+					while(reader.hasNext()){
+						reader.beginObject();
+						while(reader.hasNext()){
+							aux = reader.nextName();
+							if(aux.equals("destination")){
+								reader.beginObject();
+								reader.nextName();
+								String pDest = reader.nextString();
+								String[] id = pDest.split(":");
+								dest = id[1];
+								if(id[0].equals("host"))
+									for(int i = 2; i < id.length; ++i)
+										dest = dest + ":" + id[i];
+								reader.skipValue();
+								reader.skipValue();
+								reader.endObject();
+							}
+							else if(aux.equals("source")){
+								reader.beginObject();
+								reader.nextName();
+								String pSrc = reader.nextString();
+								String[] id = pSrc.split(":");
+								src = id[1];
+								if(id[0].equals("host"))
+									for(int i = 2; i < id.length; ++i)
+										src = src + ":" + id[i];
+								System.out.println("link:  source " + src + " destination " + dest);
+								reader.skipValue();
+								reader.skipValue();
+								reader.endObject();
+							}
+							else{
+								reader.skipValue();
+							}
+						}
+						reader.endObject();
+					}		
+				}
+				else {
 					reader.skipValue();
 				}
-				reader.endObject();
 			}
-			reader.endArray();
-			
-			while(reader.hasNext()){
-				reader.beginObject();
-				String aux = reader.nextName();
-				if(aux.equals("link-id")){
-					
-				}
-			}
+			/*if(infoNode.containsKey(link[1]) && infoNode.containsKey(link[3]))
+				topology.addLink(link[1], infoNode.get(link[1]), link[3], infoNode.get(link[3]));
+			System.out.println("link: " + link[1] + "  " + link[3]);
+			}*/
 			
 			reader.endArray();
 			reader.endObject();
@@ -202,6 +268,7 @@ public class JsonParser {
 			e.printStackTrace();
 		}
 	}
+	
 	public void readHost(InputStream in, Host host) throws IOException {
 		
 		try {
