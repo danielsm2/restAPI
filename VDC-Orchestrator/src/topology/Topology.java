@@ -30,12 +30,31 @@ public class Topology {
 	}
 	
 	public void addLink(String src, Integer it, String dest, Integer it2){
-		if(hosts.get(it).getId().equals(src) && switches.get(it2).getId().equals(dest))
+		if(hosts.get(it).getId().equals(src) && switches.get(it2).getId().equals(dest)){
 			links.add(new Link(hosts.get(it),switches.get(it2)));
-			//add link to host and switch
-		else if(hosts.get(it2).getId().equals(dest) && switches.get(it).getId().equals(src))
+			hosts.get(it).addLink();
+			switches.get(it2).addLink();
+		}
+		else if(hosts.get(it2).getId().equals(dest) && switches.get(it).getId().equals(src)){
 			links.add(new Link(hosts.get(it2),switches.get(it)));
-		else
+			hosts.get(it2).addLink();
+			switches.get(it).addLink();
+		}
+		else{
 			links.add(new Link(switches.get(it),switches.get(it2)));
+			switches.get(it).addLink();
+			switches.get(it2).addLink();
+		}
+	}
+	
+	public void clearTopology(){
+		for(Switch auxS : switches){
+			if(auxS.getnLink() == 2){
+				for(Link auxL : links){
+					if(auxL.getDestId().equals(auxS.getId()) || auxL.getSrcId().equals(auxS.getId()))
+						links.remove(auxL);
+				}
+			}
+		}
 	}
 }

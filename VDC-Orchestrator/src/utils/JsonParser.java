@@ -156,7 +156,8 @@ public class JsonParser {
 	}
 	public void readTopology(InputStream in, Topology topology, Map<String, Host> hosts){
 		try{
-			Map<String, Integer> infoNode = new HashMap<String, Integer>();
+			Map<String, Integer> collectNode = new HashMap<String, Integer>();
+			List<String> excludes = new ArrayList<String>();
 			Integer countH = 0;
 			Integer countS = 0;
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
@@ -184,19 +185,22 @@ public class JsonParser {
 									String res = mac[1];
 									for(int i = 2; i < mac.length; ++i)
 										res = res + ":" + mac[i];
-									System.out.println("host: " + res);
-									/*for(Entry<String,Host> host : hosts.entrySet()){
-										if(host.getValue().getMac().equals(node_id.split(":")[1])){
-											topology.addHost(new Host(node_id.split(":")[1]));
-											infoNode.put(node_id.split(":")[1], countH++);
+									
+									for(Entry<String,Host> host : hosts.entrySet()){
+										if(host.getValue().getMac().equals(res)){
+											topology.addHost(new Host(res));
+											collectNode.put(res, countH++);
+											System.out.println("host: " + res);
 											break;
 										}
-									}*/
+									}
+									if(!collectNode.containsKey(res))
+										excludes.add(res);
 								}
 								else{
 									System.out.println("switch: " + node_id.split(":")[1]);
 									topology.addSwitch(new Switch(node_id.split(":")[1]));
-									infoNode.put(node_id.split(":")[1], countS++);
+									collectNode.put(node_id.split(":")[1], countS++);
 								}
 							}
 							else{
@@ -238,6 +242,8 @@ public class JsonParser {
 									for(int i = 2; i < id.length; ++i)
 										src = src + ":" + id[i];
 								System.out.println("link:  source " + src + " destination " + dest);
+								if(!excludes.contains(src) && !excludes.contains(dest))
+									topology.addLink(src, collectNode.get(src), dest, collectNode.get(dest));
 								reader.skipValue();
 								reader.skipValue();
 								reader.endObject();
@@ -253,16 +259,13 @@ public class JsonParser {
 					reader.skipValue();
 				}
 			}
-			/*if(infoNode.containsKey(link[1]) && infoNode.containsKey(link[3]))
-				topology.addLink(link[1], infoNode.get(link[1]), link[3], infoNode.get(link[3]));
-			System.out.println("link: " + link[1] + "  " + link[3]);
-			}*/
+			reader.endArray();
+			reader.endObject();
+			reader.endArray();
+			reader.endObject();
+			reader.endObject();
 			
-			reader.endArray();
-			reader.endObject();
-			reader.endArray();
-			reader.endObject();
-			reader.endObject();
+			topology.clearTopology();
 			
 		} catch(Exception e){
 			e.printStackTrace();

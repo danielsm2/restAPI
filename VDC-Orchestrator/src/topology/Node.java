@@ -3,17 +3,13 @@ package topology;
 public class Node {
 
 	private String id;
-	private Link link;
+	private Integer nlink;
 	
 	public Node(){}
 	
 	public Node(String id){
 		this.id = id;
-	}
-	
-	public Node(String id, Node src, Node dest){
-		this.id = id;
-		this.link = new Link(src, dest); 
+		this.nlink = 0;
 	}
 	
 	public void setNode(String id){
@@ -24,7 +20,11 @@ public class Node {
 		return id;
 	}
 	
-	public Link getLink(){
-		return link;
+	public Integer getnLink(){
+		return nlink;
+	}
+	
+	public void addLink(){
+		++nlink;
 	}
 }
