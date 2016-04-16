@@ -13,6 +13,7 @@ public class Host extends Node{
 
 	public Host(String mac){
 		super(mac);
+		this.mac = mac;
 	}
 	
 	public Host(int cpus, double disk, double memory) {
