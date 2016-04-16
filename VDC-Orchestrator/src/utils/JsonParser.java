@@ -17,8 +17,6 @@ import api.nova.Flavor;
 import api.nova.Host;
 import tenant.Tenant;
 import tenant.TenantList;
-import topology.Link;
-import topology.Node;
 import topology.Switch;
 import topology.Topology;
 import vdc.VDC;

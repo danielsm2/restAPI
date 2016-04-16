@@ -3,7 +3,6 @@ package db;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import vdc.ErrorCheck;
 import vdc.VDC;

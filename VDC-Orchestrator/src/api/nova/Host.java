@@ -15,10 +15,6 @@ public class Host extends Node{
 		super(mac);
 	}
 	
-	public Host(String mac, Node src, Node dest){
-		super(mac,src,dest); 
-	}
-	
 	public Host(int cpus, double disk, double memory) {
 		//this.name = name;
 		this.cpus = cpus;
