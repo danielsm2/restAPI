@@ -21,6 +21,7 @@ import api.keystone.KeystoneApiClient;
 import api.nova.Flavor;
 import api.nova.Host;
 import api.nova.NovaApiClient;
+import api.odl.OdlApiClient;
 import db.DataBase;
 import db.NovaDB;
 import tenant.Tenant;
@@ -42,7 +43,7 @@ public class Orchestrator {
 
 			System.out.println("Server is listening...");*/
 
-			InputStream is = null;
+			/*InputStream is = null;
 			try{
 				System.out.println("Waiting for data");
 				is = System.in;
@@ -65,34 +66,34 @@ public class Orchestrator {
 				parse.readTopology(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), topology, h);
 			}catch(Exception e){
 				e.printStackTrace();
-			}
-			//JsonParser parser = new JsonParser();
+			}*/
+			JsonParser parser = new JsonParser();
 			
-			//KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			//String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
+			KeystoneApiClient keystoneapi = new KeystoneApiClient();
+			String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
 			//String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
-			//System.out.println(token);
+			System.out.println(token);
 
-			//List<Tenant> tenants = keystoneapi.getTenant("http://localhost:5000", token);
-			//String id = "";
-			/*for(Tenant aux : tenants){
+			List<Tenant> tenants = keystoneapi.getTenant("http://localhost:5000", token);
+			String id = "";
+			for(Tenant aux : tenants){
 				if(aux.getName().equals("admin"))
 					id = aux.getId();
 			}
 			NovaApiClient novaapi = new NovaApiClient();
-			*/
+			
 			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
 			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
-			//Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
-			/*Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
+			Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
+			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			Topology topology = new Topology();
 			OdlApiClient odlApi = new OdlApiClient();
 			odlApi.getResources(topology,hosts);
 			
-			NovaDB db = NovaDB.getInstance();
+			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();
 			ResultSet rs = db.queryDB();
 			Host aux;
