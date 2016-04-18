@@ -59,7 +59,7 @@ public class Topology {
 	
 	public void clearTopology(){
 		for(Switch auxS : switches){
-			if(auxS.getnLink() == 1){
+			if(auxS.getnLink() == 2){
 				for(int i = 0; i < links.size(); ++i){
 					if(links.get(i).getDestId().equals(auxS.getId()) || links.get(i).getSrcId().equals(auxS.getId()))
 						links.remove(i);

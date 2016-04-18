@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
-import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.Map;
 
 import api.nova.Host;
@@ -19,12 +19,14 @@ public class OdlApiClient {
 	
 	public void getResources(Topology topology, Map<String, Host> hosts){
 			try {
-				URL url = new URL("http://localhost:8181/restconf/operational/network-topology:network-topology");
+				URL url = new URL("http://172.26.37.89:8181/restconf/operational/network-topology:network-topology");
 				t = (HttpURLConnection) url.openConnection();
 				t.setRequestMethod("GET");
-				Decoder d = Base64.getDecoder();
-				byte[] decode = d.decode("admin:admin".getBytes());
-				t.setRequestProperty("Authorization", decode.toString());
+				Encoder enc = Base64.getEncoder();
+				String auth = "admin:admin";
+				//byte[] decode = d.decode("admin:admin".getBytes());
+				t.setRequestProperty("Authorization", "Basic "+new String(enc.encode(auth.getBytes())));
+				System.out.println("Basic "+new String(enc.encode(auth.getBytes())));
 				
 				int code = t.getResponseCode();
 				BufferedReader br = new BufferedReader(new InputStreamReader(t.getInputStream()));

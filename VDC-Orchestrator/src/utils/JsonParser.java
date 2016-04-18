@@ -155,8 +155,8 @@ public class JsonParser {
 	public void readTopology(InputStream in, Topology topology, Map<String, Host> hosts){
 		try{
 			
-			hosts.put("hola", new Host("08:00:27:65:42:a0"));
-			hosts.put("adios", new Host("08:00:27:4b:4f:c9"));
+			/*hosts.put("hola", new Host("08:00:27:65:42:a0"));
+			hosts.put("adios", new Host("08:00:27:4b:4f:c9"));*/
 
 			Map<String, Integer> collectNode = new HashMap<String, Integer>();
 			List<String> excludes = new ArrayList<String>();
@@ -241,7 +241,7 @@ public class JsonParser {
 								if(id[0].equals("host"))
 									for(int i = 2; i < id.length; ++i)
 										src = src + ":" + id[i];
-								if(!excludes.contains(src) && !excludes.contains(dest) && !topology.checkLinks(src, dest))
+								if(!excludes.contains(src) && !excludes.contains(dest) /*&& !topology.checkLinks(src, dest)*/)
 									topology.addLink(src, collectNode.get(src), dest, collectNode.get(dest));
 								
 								reader.skipValue();

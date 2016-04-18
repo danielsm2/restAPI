@@ -74,7 +74,7 @@ public class Orchestrator {
 			//String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
 			System.out.println(token);
 
-			List<Tenant> tenants = keystoneapi.getTenant("http://localhost:5000", token);
+			List<Tenant> tenants = keystoneapi.getTenant("http://172.26.37.249:5000", token);
 			String id = "";
 			for(Tenant aux : tenants){
 				if(aux.getName().equals("admin"))
@@ -89,11 +89,9 @@ public class Orchestrator {
 			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
 			Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
-			Topology topology = new Topology();
-			OdlApiClient odlApi = new OdlApiClient();
-			odlApi.getResources(topology,hosts);
 			
-			/*NovaDB db = NovaDB.getInstance();
+			
+			NovaDB db = NovaDB.getInstance();
 			db.startDB();
 			ResultSet rs = db.queryDB();
 			Host aux;
@@ -102,7 +100,7 @@ public class Orchestrator {
 			while(rs.next()){
 				if(hosts.containsKey(rs.getString("host"))){
 					aux = hosts.get(rs.getString("host"));
-					ssh.connect("dsanchez","localhost",22,"daniel2");					
+					ssh.connect("stack",rs.getString("host_ip"),22,"stack");					
 					String[] output = ssh.ExecuteIfconfig();
 					Map<String,String> mac = checkMac(output, aux);
 					for(Entry<String, String> set : mac.entrySet()){
@@ -115,7 +113,12 @@ public class Orchestrator {
 			for(Entry<String, Host> host : hosts.entrySet()){
 				  System.out.println("Host name=" + host.getKey() + ", Host_info " + host.getValue().toString());
 			}
-			db.stopDB();*/
+			
+			Topology topology = new Topology();
+			OdlApiClient odlApi = new OdlApiClient();
+			odlApi.getResources(topology,hosts);
+			
+			db.stopDB();
 			
 			//System.out.println(hosts.toString());
 			

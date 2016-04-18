@@ -10,11 +10,11 @@ import java.sql.Statement;
 public class NovaDB {
 
 	private static final String DB_USER = "root";
-	private static final String DB_PASS = "password";
-	//private static final String DB_PASS = "cosign";
+	//private static final String DB_PASS = "password";
+	private static final String DB_PASS = "cosign";
 	
-	//private static final String DB_URL = "jdbc:mysql://172.26.37.249:3306/nova";
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/nova";
+	private static final String DB_URL = "jdbc:mysql://172.26.37.249:3306/nova";
+	//private static final String DB_URL = "jdbc:mysql://localhost:3306/nova";
 	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
 	
 	Connection c;
