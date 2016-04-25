@@ -32,20 +32,24 @@ public class Topology {
 	public void addLink(String src, Integer it, String dest, Integer it2){
 		int nHost = hosts.size();
 		int nSwitch = switches.size();
+		Link aux;
 		if(nHost > it && nSwitch > it2 && hosts.get(it).getId().equals(src) && switches.get(it2).getId().equals(dest)){
-			links.add(new Link(hosts.get(it),switches.get(it2)));
-			hosts.get(it).addLink();
-			switches.get(it2).addLink();
+			aux = new Link(hosts.get(it),switches.get(it2));
+			links.add(aux);
+			hosts.get(it).addLink(aux);
+			switches.get(it2).addLink(aux);
 		}
 		else if(nHost > it2 && nSwitch > it && hosts.get(it2).getId().equals(dest) && switches.get(it).getId().equals(src)){
-			links.add(new Link(switches.get(it),hosts.get(it2)));
-			hosts.get(it2).addLink();
-			switches.get(it).addLink();
+			aux = new Link(switches.get(it),hosts.get(it2));
+			links.add(aux);
+			hosts.get(it2).addLink(aux);
+			switches.get(it).addLink(aux);
 		}
 		else{
-			links.add(new Link(switches.get(it),switches.get(it2)));
-			switches.get(it).addLink();
-			switches.get(it2).addLink();
+			aux = new Link(switches.get(it),switches.get(it2));
+			links.add(aux);
+			switches.get(it).addLink(aux);
+			switches.get(it2).addLink(aux);
 		}
 	}
 	

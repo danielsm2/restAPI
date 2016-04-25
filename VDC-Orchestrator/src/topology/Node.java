@@ -1,15 +1,17 @@
 package topology;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node {
 
 	private String id;
-	private Integer nlink;
-	
+	//private Integer nlink;
+	private List<Link> links = new ArrayList<Link>();
 	public Node(){}
 	
 	public Node(String id){
 		this.id = id;
-		this.nlink = 0;
 	}
 	
 	public void setNode(String id){
@@ -21,10 +23,10 @@ public class Node {
 	}
 	
 	public Integer getnLink(){
-		return nlink;
+		return links.size();
 	}
 	
-	public void addLink(){
-		++nlink;
+	public void addLink(Link link){
+		links.add(link);
 	}
 }
