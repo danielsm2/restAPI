@@ -6,8 +6,9 @@ import java.util.List;
 public class Node {
 
 	private String id;
-	//private Integer nlink;
-	private List<Link> links = new ArrayList<Link>();
+	private List<Node> link_in = new ArrayList<Node>();
+	private List<Node> link_out = new ArrayList<Node>();
+	
 	public Node(){}
 	
 	public Node(String id){
@@ -22,11 +23,15 @@ public class Node {
 		return id;
 	}
 	
-	public Integer getnLink(){
-		return links.size();
+	public Integer getNumLinks(){
+		return link_in.size() + link_out.size();
 	}
 	
-	public void addLink(Link link){
-		links.add(link);
+	public void addLink_in(Node node){
+		link_in.add(node);
+	}
+	
+	public void addLink_out(Node node){
+		link_out.add(node);
 	}
 }

@@ -32,24 +32,25 @@ public class Topology {
 	public void addLink(String src, Integer it, String dest, Integer it2){
 		int nHost = hosts.size();
 		int nSwitch = switches.size();
-		Link aux;
 		if(nHost > it && nSwitch > it2 && hosts.get(it).getId().equals(src) && switches.get(it2).getId().equals(dest)){
-			aux = new Link(hosts.get(it),switches.get(it2));
-			links.add(aux);
-			hosts.get(it).addLink(aux);
-			switches.get(it2).addLink(aux);
+			links.add(new Link(hosts.get(it),switches.get(it2)));
+			hosts.get(it).addLink_out(switches.get(it2));
+			switches.get(it2).addLink_in(hosts.get(it));
 		}
 		else if(nHost > it2 && nSwitch > it && hosts.get(it2).getId().equals(dest) && switches.get(it).getId().equals(src)){
-			aux = new Link(switches.get(it),hosts.get(it2));
-			links.add(aux);
-			hosts.get(it2).addLink(aux);
-			switches.get(it).addLink(aux);
+			links.add(new Link(switches.get(it),hosts.get(it2)));
+			switches.get(it).addLink_out(hosts.get(it2));
+			hosts.get(it2).addLink_in(switches.get(it));
+		}
+		else if(switches.get(it).equals(src) && switches.get(it2).equals(dest)){
+			links.add(new Link(switches.get(it),switches.get(it2)));
+			switches.get(it).addLink_out(switches.get(it2));
+			switches.get(it2).addLink_in(switches.get(it));
 		}
 		else{
-			aux = new Link(switches.get(it),switches.get(it2));
-			links.add(aux);
-			switches.get(it).addLink(aux);
-			switches.get(it2).addLink(aux);
+			links.add(new Link(switches.get(it2),switches.get(it)));
+			switches.get(it2).addLink_out(switches.get(it));
+			switches.get(it).addLink_in(switches.get(it2));
 		}
 	}
 	
@@ -63,7 +64,7 @@ public class Topology {
 	
 	public void clearTopology(){
 		for(Switch auxS : switches){
-			if(auxS.getnLink() == 2){
+			if(auxS.getNumLinks() == 2){
 				for(int i = 0; i < links.size(); ++i){
 					if(links.get(i).getDestId().equals(auxS.getId()) || links.get(i).getSrcId().equals(auxS.getId()))
 						links.remove(i);
@@ -74,13 +75,13 @@ public class Topology {
 	
 	public void printSwitch(){
 		for(Switch aux : switches){
-			System.out.println("Switch: " + aux.getId() + " numero de links: " + aux.getnLink());
+			System.out.println("Switch: " + aux.getId() + " numero de links: " + aux.getNumLinks());
 		}
 	}
 	
 	public void printHost(){
 		for(Host aux : hosts)
-			System.out.println("Host: " + aux.getId() + " numero de links: " + aux.getnLink());
+			System.out.println("Host: " + aux.getId() + " numero de links: " + aux.getNumLinks());
 	}
 	
 	public void printLink(){
