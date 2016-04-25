@@ -23,7 +23,7 @@ public class VirtualLink{
 	/** The source virtual node of the virtual link. */
 	private String from;
 	
-	public VirtualLink(String id, String bandwith, String source, String destination){
+	public VirtualLink(String id, String bandwith, String destination, String source){
 		this.id = id;
 		this.bandwith = bandwith;
 		this.to = destination;

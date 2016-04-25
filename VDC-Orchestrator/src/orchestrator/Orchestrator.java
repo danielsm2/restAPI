@@ -34,14 +34,14 @@ public class Orchestrator {
 	public static void main(String[] args) {
 		
 		try {
-			/*DataBase db = DataBase.getInstance();
+			DataBase db = DataBase.getInstance();
 			db.startDB();
 			
 			HorizonApiServer horizonapi = new HorizonApiServer("0.0.0.0",12119,0);
 			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), "admin", "admin");
 			horizonapi.start();
 
-			System.out.println("Server is listening...");*/
+			System.out.println("Server is listening...");
 
 			/*InputStream is = null;
 			try{
@@ -67,7 +67,7 @@ public class Orchestrator {
 			}catch(Exception e){
 				e.printStackTrace();
 			}*/
-			JsonParser parser = new JsonParser();
+			/*JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
 			String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
@@ -80,18 +80,17 @@ public class Orchestrator {
 				if(aux.getName().equals("admin"))
 					id = aux.getId();
 			}
-			NovaApiClient novaapi = new NovaApiClient();
+			NovaApiClient novaapi = new NovaApiClient();*/
 			
 			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
-			//ArrayList<Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser);
-			Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
+			//Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
 			
-			NovaDB db = NovaDB.getInstance();
+			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();
 			ResultSet rs = db.queryDB();
 			Host aux;
@@ -118,16 +117,7 @@ public class Orchestrator {
 			OdlApiClient odlApi = new OdlApiClient();
 			odlApi.getResources(topology,hosts);
 			
-			db.stopDB();
-			
-			//System.out.println(hosts.toString());
-			
-			/*SSHclient ssh = new SSHclient();
-			
-			ssh.connect("apages", "84.88.32.238", 15978,);
-			String output = ssh.ExecuteIfconfig();
-			System.out.println(output);
-			ssh.disconnect();*/
+			db.stopDB();*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();

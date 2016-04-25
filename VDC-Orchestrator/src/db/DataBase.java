@@ -26,12 +26,12 @@ public class DataBase {
 	
 	private String queryVDC = "SELECT tenantID FROM vdc WHERE tenantID=?";
 	private String queryVNODE = "SELECT * FROM vnode WHERE fk_vdc=?";
-	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=?";
+	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=? OR fk_from=?";
 	private String queryVM = "SELECT * FROM vm WHERE fk_vnode=?";
 	
 	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
 	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
-	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=?";
+	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=? OR fk_from=?";
 	private String deleteVM = "DELETE FROM vm WHERE fk_vnode=?";
 
 	private Map<String,VDC> setVDC = new HashMap<String,VDC>();
@@ -159,7 +159,6 @@ public class DataBase {
 				showDB(vdc, "vm", rs.getString("id"), request);
 				showDB(vdc, "vlink", rs.getString("id"), request);
 				if(request.equals("delete")){
-					//System.out.println("delete vnode");
 					PreparedStatement aux = prepareStatement(deleteVNODE);
 					aux.setString(1, rs.getString("id"));
 					aux.executeUpdate();
@@ -176,7 +175,6 @@ public class DataBase {
 					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
-					//System.out.println("delete vm");
 					PreparedStatement aux = prepareStatement(deleteVM);
 					aux.setString(1, foreignKey);
 					aux.executeUpdate();
@@ -187,20 +185,29 @@ public class DataBase {
 		else if(level.equals("vlink")){
 			ps = prepareStatement(queryVLINK);
 			ps.setString(1, foreignKey);
+			ps.setString(2, foreignKey);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
-				if(request.equals("get"))
+				if(request.equals("get") && !checkID(rs.getString("id"), vdc))
 					vdc.addLinks(new VirtualLink(rs.getString("id"), rs.getString("bandwith"), rs.getString("fk_to"), rs.getString("fk_from")));
 				else if(request.equals("delete")){
-					//System.out.println("delete vlink");
 					PreparedStatement aux = prepareStatement(deleteVLINK);
 					aux.setString(1, foreignKey);
+					aux.setString(2, foreignKey);
 					aux.executeUpdate();
 				}		
 			}
 			return ErrorCheck.ALL_OK;
 		}
 		return ErrorCheck.ALL_OK;
+	}
+	
+	private boolean checkID(String id, VDC vdc){
+		for(int i = 0; i < vdc.getNumElemVlink(); ++i){
+			if(vdc.getIdVlink(i).equals(id))
+				return true;
+		}
+		return false;
 	}
 	
 	/**

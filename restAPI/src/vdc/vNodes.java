@@ -57,7 +57,6 @@ public class vNodes {
 				String flavor = aux.getFlavor();
 				String image = aux.getImage();
 				db.newEntryDB("INSERT INTO vm VALUES ('" + id + "','" + label + "','" + flavor + "','" + image + "','" + this.id + "')");
-				System.out.println("insert vm");
 			}
 			else{
 				ps = db.prepareStatement("UPDATE vm SET label=?,flavorID=?,imageID=? WHERE id=?");
@@ -66,7 +65,6 @@ public class vNodes {
 				ps.setString(3, aux.getImage());
 				ps.setString(4, aux.getId());
 				ps.executeUpdate();
-				System.out.println("update vm");
 			}
 		}
 	}
