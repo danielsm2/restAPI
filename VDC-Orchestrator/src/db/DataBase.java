@@ -4,6 +4,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import conf.Conf;
 import vdc.ErrorCheck;
 import vdc.VDC;
 import vdc.VirtualMachine;
@@ -18,8 +19,6 @@ import java.sql.SQLException;
 
 public class DataBase {
 
-	private static final String DB_USER = "root";
-	private static final String DB_PASS = "password";
 	private static final String DB_URL = "jdbc:mysql://localhost:3306/algorithms";
 	
 	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
@@ -97,7 +96,7 @@ public class DataBase {
 	 */
 	private void createConnection(){
 		try{
-			c = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
+			c = DriverManager.getConnection(DB_URL,Conf.User_BD_Horizon,Conf.Pass_BD_Horizon);
 		}catch(SQLException e){
 			System.err.println("Unable to connect with data base");
 			System.err.println(e);

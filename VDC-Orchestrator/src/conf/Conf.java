@@ -1,0 +1,94 @@
+package conf;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
+public class Conf {
+
+	public static String IP_Horizon;
+	public static String Port_Horizon;
+	public static String User_Horizon;
+	public static String Pass_Horizon;
+	public static String IP_Keystone;
+	public static String User_Keystone;
+	public static String Pass_Keystone;
+	public static String IP_Nova;
+	public static String IP_ODL;
+	public static String User_ODL;
+	public static String Pass_ODL;
+	public static String User_BD_Horizon;
+	public static String Pass_BD_Horizon;
+	public static String User_BD_Nova;
+	public static String Pass_BD_Nova;
+	public static String User_Compute;
+	public static String Pass_Compute;
+
+	public static void initiateConf() throws FileNotFoundException, UnsupportedEncodingException{
+		PrintWriter writer = new PrintWriter("server.conf", "UTF-8");
+		
+		writer.println("IP_Horizon=0.0.0.0");
+		writer.println("Port_Horizon=12119");
+		writer.println("User_Horizon=admin");
+		writer.println("Pass_Horizon=admin");
+		writer.println("IP_Keystone=172.26.37.249:5000");
+		writer.println("User_Keystone=admin");
+		writer.println("Pass_Keystone=cosign");
+		writer.println("IP_Nova=172.26.37.249:8774");
+		writer.println("IP_ODL=172.26.37.89:8181");
+		writer.println("User_ODL=admin");
+		writer.println("Pass_ODL=admin");
+		writer.println("User_BD_Horizon=root");
+		writer.println("Pass_BD_Horizon=password");
+		writer.println("User_BD_Nova=root");
+		writer.println("Pass_BD_Nova=cosign");
+		writer.println("User_Compute=stack");
+		writer.println("Pass_Compute=stack");
+		writer.close();
+	}
+	
+	public static void readConf() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader("server.conf"));
+		
+		String line = null;
+		while((line = br.readLine()) != null){
+			if(line.contains("IP_Horizon"))
+				IP_Horizon = line.split("=")[1];
+			else if(line.contains("Port_Horizon"))
+				Port_Horizon = line.split("=")[1];
+			else if(line.contains("User_Horizon"))
+				User_Horizon = line.split("=")[1];
+			else if(line.contains("Pass_Horizon"))
+				Pass_Horizon = line.split("=")[1];
+			else if(line.contains("IP_Keystone"))
+				IP_Keystone = line.split("=")[1];
+			else if(line.contains("User_Keystone"))
+				User_Keystone = line.split("=")[1];
+			else if(line.contains("Pass_Keystone"))
+				Pass_Keystone = line.split("=")[1];
+			else if(line.contains("IP_Nova"))
+				IP_Nova = line.split("=")[1];
+			else if(line.contains("IP_ODL"))
+				IP_ODL = line.split("=")[1];
+			else if(line.contains("User_ODL"))
+				User_ODL = line.split("=")[1];
+			else if(line.contains("Pass_ODL"))
+				Pass_ODL = line.split("=")[1];
+			else if(line.contains("User_BD_Horizon"))
+				User_BD_Horizon = line.split("=")[1];
+			else if(line.contains("Pass_BD_Horizon"))
+				Pass_BD_Horizon = line.split("=")[1];
+			else if(line.contains("User_BD_Nova"))
+				User_BD_Nova = line.split("=")[1];
+			else if(line.contains("Pass_BD_Nova"))
+				Pass_BD_Nova = line.split("=")[1];
+			else if(line.contains("User_Compute"))
+				User_Compute = line.split("=")[1];
+			else if(line.contains("Pass_Compute"))
+				Pass_Compute = line.split("=")[1];
+		}
+	}
+}

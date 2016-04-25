@@ -10,6 +10,7 @@ import java.util.Base64.Encoder;
 import java.util.Map;
 
 import api.nova.Host;
+import conf.Conf;
 import topology.Topology;
 import utils.JsonParser;
 
@@ -19,11 +20,11 @@ public class OdlApiClient {
 	
 	public void getResources(Topology topology, Map<String, Host> hosts){
 			try {
-				URL url = new URL("http://172.26.37.89:8181/restconf/operational/network-topology:network-topology");
+				URL url = new URL("http://" + Conf.IP_ODL + "/restconf/operational/network-topology:network-topology");
 				t = (HttpURLConnection) url.openConnection();
 				t.setRequestMethod("GET");
 				Encoder enc = Base64.getEncoder();
-				String auth = "admin:admin";
+				String auth = Conf.User_ODL + ":" + Conf.User_ODL;
 				//byte[] decode = d.decode("admin:admin".getBytes());
 				t.setRequestProperty("Authorization", "Basic "+new String(enc.encode(auth.getBytes())));
 				System.out.println("Basic "+new String(enc.encode(auth.getBytes())));

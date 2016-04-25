@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import api.nova.Flavor;
 import api.nova.Host;
 import api.nova.NovaApiClient;
 import api.odl.OdlApiClient;
+import conf.Conf;
 import db.DataBase;
 import db.NovaDB;
 import tenant.Tenant;
@@ -34,11 +36,15 @@ public class Orchestrator {
 	public static void main(String[] args) {
 		
 		try {
+			
+			//Conf.initiateConf();
+			Conf.readConf();
+			
 			DataBase db = DataBase.getInstance();
 			db.startDB();
-			
-			HorizonApiServer horizonapi = new HorizonApiServer("0.0.0.0",12119,0);
-			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), "admin", "admin");
+		
+			HorizonApiServer horizonapi = new HorizonApiServer(Conf.IP_Horizon,Integer.parseInt(Conf.Port_Horizon),0);
+			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), Conf.User_Horizon, Conf.Pass_Horizon);
 			horizonapi.start();
 
 			System.out.println("Server is listening...");
@@ -70,11 +76,11 @@ public class Orchestrator {
 			/*JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			String token = keystoneapi.getToken("http://172.26.37.249:5000", "admin", "cosign", "default");
+			String token = keystoneapi.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
 			//String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
 			System.out.println(token);
 
-			List<Tenant> tenants = keystoneapi.getTenant("http://172.26.37.249:5000", token);
+			List<Tenant> tenants = keystoneapi.getTenant(Conf.IP_Keystone, token);
 			String id = "";
 			for(Tenant aux : tenants){
 				if(aux.getName().equals("admin"))
@@ -82,11 +88,11 @@ public class Orchestrator {
 			}
 			NovaApiClient novaapi = new NovaApiClient();*/
 			
-			/*ArrayList<Flavor> flavors = novaapi.getFlavors("http://172.26.37.249:8774", token, parser, id);
+			/*ArrayList<Flavor> flavors = novaapi.getFlavors(Conf.IP_Nova, token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
-			//Map<String,Host> hosts = novaapi.getHosts("http://172.26.37.249:8774", token, parser, id);
+			//Map<String,Host> hosts = novaapi.getHosts(Conf.IP_Nova, token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
 			
@@ -99,7 +105,7 @@ public class Orchestrator {
 			while(rs.next()){
 				if(hosts.containsKey(rs.getString("host"))){
 					aux = hosts.get(rs.getString("host"));
-					ssh.connect("stack",rs.getString("host_ip"),22,"stack");					
+					ssh.connect(Conf.User_Compute,rs.getString("host_ip"),22,Conf.Pass_Compute);					
 					String[] output = ssh.ExecuteIfconfig();
 					Map<String,String> mac = checkMac(output, aux);
 					for(Entry<String, String> set : mac.entrySet()){
