@@ -36,8 +36,6 @@ public class Orchestrator {
 	public static void main(String[] args) {
 		
 		try {
-			
-			//Conf.initiateConf();
 			Conf.readConf();
 			
 			DataBase db = DataBase.getInstance();

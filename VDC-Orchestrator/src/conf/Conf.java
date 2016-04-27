@@ -1,6 +1,7 @@
 package conf;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -47,10 +48,33 @@ public class Conf {
 		writer.println("Pass_BD_Nova=cosign");
 		writer.println("User_Compute=stack");
 		writer.println("Pass_Compute=stack");
+		/*writer.println("IP_Horizon=");
+		writer.println("Port_Horizon=");
+		writer.println("User_Horizon=");
+		writer.println("Pass_Horizon=");
+		writer.println("IP_Keystone=");
+		writer.println("User_Keystone=");
+		writer.println("Pass_Keystone=");
+		writer.println("IP_Nova=");
+		writer.println("IP_ODL=");
+		writer.println("User_ODL=");
+		writer.println("Pass_ODL=");
+		writer.println("User_BD_Horizon=");
+		writer.println("Pass_BD_Horizon=");
+		writer.println("User_BD_Nova=");
+		writer.println("Pass_BD_Nova=");
+		writer.println("User_Compute=");
+		writer.println("Pass_Compute=");*/
 		writer.close();
 	}
 	
 	public static void readConf() throws IOException{
+		File check = new File("server.conf");
+		if(!check.exists()){
+			initiateConf();
+			System.err.println("The configuration file 'server.conf' must exist. Refill the configuration file created at " + check.getAbsolutePath());
+			System.exit(1);
+		}
 		BufferedReader br = new BufferedReader(new FileReader("server.conf"));
 		
 		String line = null;
