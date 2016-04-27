@@ -154,7 +154,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get"))
-					vdc.addNodes(new VirtualNode(rs.getString("id"), rs.getString("label")));
+					vdc.addNodes(new VirtualNode(rs.getString("id").split(":")[1], rs.getString("label")));
 				showDB(vdc, "vm", rs.getString("id"), request);
 				showDB(vdc, "vlink", rs.getString("id"), request);
 				if(request.equals("delete")){
@@ -170,7 +170,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get")){
-					VirtualNode vnode = vdc.getVnode(foreignKey);
+					VirtualNode vnode = vdc.getVnode(foreignKey.split(":")[1]);
 					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("flavorName"),rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
@@ -187,8 +187,8 @@ public class DataBase {
 			ps.setString(2, foreignKey);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
-				if(request.equals("get") && !checkID(rs.getString("id"), vdc))
-					vdc.addLinks(new VirtualLink(rs.getString("id"), rs.getString("bandwith"), rs.getString("fk_to"), rs.getString("fk_from")));
+				if(request.equals("get") && !checkID(rs.getString("id").split(":")[1], vdc))
+					vdc.addLinks(new VirtualLink(rs.getString("id").split(":")[1], rs.getString("bandwith"), rs.getString("fk_to").split(":")[1], rs.getString("fk_from").split(":")[1]));
 				else if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVLINK);
 					aux.setString(1, foreignKey);
@@ -254,6 +254,22 @@ public class DataBase {
 	}
 	
 	public void saveVDC(VDC vdc){
+		if(vdc.getIdVnode(0).contains(":")){
+			for(int i = 0; i < vdc.getNumElemVlink(); ++i){
+				VirtualLink aux = vdc.getVlink_(i);
+				aux.setId(aux.getId().split(":")[1]);
+			}
+			
+			for(int i = 0; i < vdc.getNumElemVnode(); ++i){
+				VirtualNode aux = vdc.getVnode_(i);
+				aux.setId(aux.getId().split(":")[1]);
+				for(int j = 0; j < aux.getNumElemVirtualMachine(); ++j){
+					VirtualMachine vm = aux.getVirtualMachine(j);
+					vm.setId(vm.getId().split(":")[1]);
+				}
+			}
+		}
+		
 		setVDC.put(vdc.getTenant(), vdc);
 	}
 	

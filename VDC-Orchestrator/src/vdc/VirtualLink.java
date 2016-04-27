@@ -34,6 +34,18 @@ public class VirtualLink{
 		return id;
 	}
 	
+	public void setId(String id){
+		this.id = id;
+	}
+	
+	public void setSource(String from){
+		this.from = from;
+	}
+	
+	public void setDestination(String to){
+		this.to = to;
+	}
+	
 	public String getBandwith(){
 		return bandwith;
 	}

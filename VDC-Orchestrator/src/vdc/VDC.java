@@ -98,6 +98,14 @@ public class VDC {
 		return null;
 	}
 	
+	public VirtualNode getVnode_(int i){
+		return vnodes.get(i);
+	}
+	
+	public VirtualLink getVlink_(int i){
+		return vlinks.get(i);
+	}
+	
 	public int getNumElemVnode(){
 		return vnodes.size();
 	}
@@ -220,9 +228,11 @@ public class VDC {
 	 * @throws SQLException
 	 */
 	public PreparedStatement entryCheckerDB_vnode(int i) throws SQLException{
+		VirtualNode aux = vnodes.get(i);
+		aux.setId(tenantID+":"+aux.getId());
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vnode WHERE id=?");
-		ps.setString(1, vnodes.get(i).getId());
+		ps.setString(1, aux.getId());
 		return ps;
 	}
 	
@@ -233,9 +243,13 @@ public class VDC {
 	 * @throws SQLException
 	 */
 	public PreparedStatement entryCheckerDB_vlink(int i) throws SQLException{
+		VirtualLink aux = vlinks.get(i);
+		aux.setId(tenantID+":"+aux.getId());
+		aux.setDestination(tenantID+":"+aux.getDestination());
+		aux.setSource(tenantID+":"+aux.getSource());
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vlink WHERE id=?");
-		ps.setString(1, vlinks.get(i).getId());
+		ps.setString(1, aux.getId());
 		return ps;	
 	}
 	

@@ -32,6 +32,9 @@ public class VirtualNode {
 		this.label = label;
 	}
 	
+	public void setId(String id){
+		this.id = id;
+	}
 	public void addVM(VirtualMachine vm){
 		vms.add(vm);
 	}
@@ -56,12 +59,22 @@ public class VirtualNode {
 		return label;
 	}
 	
+	public int getNumElemVirtualMachine(){
+		return vms.size();
+	}
+	
+	public VirtualMachine getVirtualMachine(int i){
+		return vms.get(i);
+	}
+	
 	public void updateVM() throws SQLException{
 		DataBase db = DataBase.getInstance();
 		ResultSet rs;
 		for(VirtualMachine aux : vms){
 			PreparedStatement ps = db.prepareStatement("SELECT id FROM vm WHERE id = ?");
 			ps.setString(1, aux.getId());
+			System.out.println(aux.getId());
+			System.out.println(this.id);
 			rs = db.queryDB(ps); 
 			if(aux.checkRow(rs)){
 			    String id = aux.getId();
