@@ -171,7 +171,7 @@ public class DataBase {
 			while(rs.next()){
 				if(request.equals("get")){
 					VirtualNode vnode = vdc.getVnode(foreignKey);
-					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("imageID")));
+					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("flavorName"),rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVM);
@@ -217,7 +217,7 @@ public class DataBase {
 		try{
 			stmt.executeUpdate(sql);
 		}catch(SQLException e){
-			System.err.println(e);
+			e.printStackTrace();
 			System.exit(0);
 		}
 	}
@@ -232,7 +232,7 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			return rs;
 		}catch(SQLException e){
-			System.err.println(e);
+			e.printStackTrace();
 			System.exit(0);
 		}
 		return null;
@@ -247,7 +247,7 @@ public class DataBase {
 		try{
 			return c.prepareStatement(sql);
 		}catch(SQLException e){
-			System.err.println(e);
+			e.printStackTrace();
 			System.exit(1);
 		}
 		return null;

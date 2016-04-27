@@ -66,16 +66,18 @@ public class VirtualNode {
 			if(aux.checkRow(rs)){
 			    String id = aux.getId();
 				String label = aux.getLabel();
-				String flavor = aux.getFlavor();
+				String flavorID = aux.getFlavorID();
+				String flavorName = aux.getFlavorName();
 				String image = aux.getImage();
-				db.newEntryDB("INSERT INTO vm VALUES ('" + id + "','" + label + "','" + flavor + "','" + image + "','" + this.id + "')");
+				db.newEntryDB("INSERT INTO vm VALUES ('" + id + "','" + label + "','" + flavorID + "','" + flavorName + "','" + image + "','" + this.id + "')");
 			}
 			else{
-				ps = db.prepareStatement("UPDATE vm SET label=?,flavorID=?,imageID=? WHERE id=?");
+				ps = db.prepareStatement("UPDATE vm SET label=?,flavorID=?,flavorName=?,imageID=? WHERE id=?");
 				ps.setString(1, aux.getLabel());
-				ps.setString(2, aux.getFlavor());
-				ps.setString(3, aux.getImage());
-				ps.setString(4, aux.getId());
+				ps.setString(2, aux.getFlavorID());
+				ps.setString(3, aux.getFlavorName());
+				ps.setString(4, aux.getImage());
+				ps.setString(5, aux.getId());
 				ps.executeUpdate();
 			}
 		}

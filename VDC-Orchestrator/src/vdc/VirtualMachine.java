@@ -21,6 +21,8 @@ public class VirtualMachine {
 	/** The name of the requested flavor. */
 	private String flavorID;
 	
+	private String flavorName;
+	
 	/** The name of the image of the operating system. */
 	private String imageID;
 	
@@ -33,9 +35,10 @@ public class VirtualMachine {
 	/** The number of requested cpu cores. */
 	private transient String cpus;
 	
-	public VirtualMachine(String label, String flavor, String image){
+	public VirtualMachine(String label, String flavorID, String flavorName, String image){
 		this.label = label;
-		this.flavorID = flavor;
+		this.flavorID = flavorID;
+		this.flavorName = flavorName;
 		this.imageID = image;
 	}
 	
@@ -47,12 +50,16 @@ public class VirtualMachine {
 		return label;
 	}
 	
-	public String getFlavor(){
+	public String getFlavorID(){
 		return flavorID;
 	}
 	
 	public String getImage(){
 		return imageID;
+	}
+	
+	public String getFlavorName(){
+		return flavorName;
 	}
 	/*public String getInfoMachine(){
 		Iterator<String> it = VMS.keySet().iterator();
@@ -64,11 +71,11 @@ public class VirtualMachine {
 	}*/
 	
 	public void printInfo(){
-		System.out.println(" label : " + label + " flavor : " + flavorID + " image : " + imageID);
+		System.out.println(" label : " + label + " flavorID : " + flavorID + "flavorName: " + flavorName + " image : " + imageID);
 	}
 	
 	public ErrorCheck check_vm(){
-		if(label.isEmpty() || flavorID.isEmpty() || imageID.isEmpty() ||
+		if(label.isEmpty() || flavorID.isEmpty() || flavorName.isEmpty() || imageID.isEmpty() ||
 				label == null || flavorID == null || imageID == null){
 			return ErrorCheck.VM_NOT_COMPLETED;
 		}

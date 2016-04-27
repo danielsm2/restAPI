@@ -154,12 +154,17 @@ public class HorizonApiHandler implements HttpHandler{
 			if(method.equals("POST")){
 				response = "The VDC given has been registered";
 				db.saveVDC(vdc);
+				e.sendResponseHeaders(201, response.length());
 			}
-			else if(method.equals("DELETE"))
+			else if(method.equals("DELETE")){
 				response = "Delete operation has been processed";
-			else
+				e.sendResponseHeaders(200, response.length());
+			}
+			else{
 				response = getResponse;
-			e.sendResponseHeaders(201, response.length());
+				e.sendResponseHeaders(200, response.length());
+			}
+			
 		}
 		else if(ec.equals(ErrorCheck.VDC_NOT_COMPLETED)){
 			response = "Incorrect content. Tenant id has to be informed";
