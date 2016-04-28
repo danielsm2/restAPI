@@ -129,17 +129,11 @@ public class HorizonApiHandler implements HttpHandler{
 	private String checkQuery(String query){
 		if(query != null){
 			String[] param = query.split("=");
-			if(param.length > 2){
-				String[] tenant = param[1].split("&");
-				return tenant[0];
-			}
-			else{
+			if(param[0].equals("tenantID")){
 				return param[1];
 			}
 		}
-		else{
-			return "";
-		}
+		return "";
 	}
 	
 	private void resRequest(ErrorCheck ec, HttpExchange e, String method, String getResponse) throws IOException, SQLException{
