@@ -72,6 +72,7 @@ public class KeystoneApiClient {
 		return token;
 	}
 	
+	@SuppressWarnings("static-access")
 	public List<Tenant> getTenant(String keystoneurl, String token){
 		List<Tenant> tenants = new ArrayList<Tenant>();
 		HttpURLConnection connection = null;

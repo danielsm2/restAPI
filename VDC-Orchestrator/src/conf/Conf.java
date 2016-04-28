@@ -114,5 +114,6 @@ public class Conf {
 			else if(line.contains("Pass_Compute"))
 				Pass_Compute = line.split("=")[1];
 		}
+		br.close();
 	}
 }
