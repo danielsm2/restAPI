@@ -170,8 +170,8 @@ public class DataBase {
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				if(request.equals("get")){
-					VirtualNode vnode = vdc.getVnode(foreignKey.split(":")[1]);
-					vnode.addVM(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("flavorName"),rs.getString("imageID")));
+					VirtualNode vnode = vdc.getVNodeByName(foreignKey.split(":")[1]);
+					vnode.addVirtualMachine(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("flavorName"),rs.getString("imageID")));
 				}
 				else if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVM);
@@ -202,8 +202,8 @@ public class DataBase {
 	}
 	
 	private boolean checkID(String id, VDC vdc){
-		for(int i = 0; i < vdc.getNumElemVlink(); ++i){
-			if(vdc.getIdVlink(i).equals(id))
+		for(int i = 0; i < vdc.getSizeVLink(); ++i){
+			if(vdc.getVLinkID(i).equals(id))
 				return true;
 		}
 		return false;
@@ -254,16 +254,16 @@ public class DataBase {
 	}
 	
 	public void saveVDC(VDC vdc){
-		if(vdc.getIdVnode(0).contains(":")){
-			for(int i = 0; i < vdc.getNumElemVlink(); ++i){
-				VirtualLink aux = vdc.getVlink_(i);
-				aux.setId(aux.getId().split(":")[1]);
+		if(vdc.getVNodeID(0).contains(":")){
+			for(int i = 0; i < vdc.getSizeVLink(); ++i){
+				VirtualLink aux = vdc.getVLinkByPos(i);
+				aux.setID(aux.getID().split(":")[1]);
 			}
 			
-			for(int i = 0; i < vdc.getNumElemVnode(); ++i){
-				VirtualNode aux = vdc.getVnode_(i);
-				aux.setId(aux.getId().split(":")[1]);
-				for(int j = 0; j < aux.getNumElemVirtualMachine(); ++j){
+			for(int i = 0; i < vdc.getSizeVNode(); ++i){
+				VirtualNode aux = vdc.getVNodeByPos(i);
+				aux.setID(aux.getId().split(":")[1]);
+				for(int j = 0; j < aux.getSizeVirtualMachine(); ++j){
 					VirtualMachine vm = aux.getVirtualMachine(j);
 					vm.setId(vm.getId().split(":")[1]);
 				}

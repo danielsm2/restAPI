@@ -23,6 +23,13 @@ public class VirtualLink{
 	/** The source virtual node of the virtual link. */
 	private String from;
 	
+	/**
+	 * Creates a new virtual link instance
+	 * @param id - the ID of the virtual link
+	 * @param bandwith - the bandwith of the virtual link
+	 * @param destination - the virtual node destination of the virtual link
+	 * @param source - the virtual node source of the virtual link
+	 */
 	public VirtualLink(String id, String bandwith, String destination, String source){
 		this.id = id;
 		this.bandwith = bandwith;
@@ -30,48 +37,88 @@ public class VirtualLink{
 		this.from = source;
 	}
 	
-	public String getId(){
+	/**
+	 * Get the virtual link ID
+	 * @return
+	 */
+	public String getID(){
 		return id;
 	}
 	
-	public void setId(String id){
+	/**
+	 * Set the virtual link ID identified by id
+	 * @param id - the new ID of the virtual link
+	 */
+	public void setID(String id){
 		this.id = id;
 	}
 	
+	/**
+	 * Set the virtual link source reference of a virtual node
+	 * @param from - id of the virtual node source
+	 */
 	public void setSource(String from){
 		this.from = from;
 	}
 	
+	/**
+	 * Set the virtual link destination reference of a virtual node
+	 * @param to - id of the virtual node destination
+	 */
 	public void setDestination(String to){
 		this.to = to;
 	}
 	
+	/**
+	 * Get the bandwith of the virtual link
+	 * @return
+	 */
 	public String getBandwith(){
 		return bandwith;
 	}
 	
+	/**
+	 * Get the virtual node destination ID of the virtual link
+	 * @return
+	 */
 	public String getDestination(){
 		return to;
 	}
 	
+	/**
+	 * Get the virtual node source ID of the virtual link
+	 * @return
+	 */
 	public String getSource(){
 		return from;
 	}
 	
+	/**
+	 * Print the virtual link information
+	 */
 	public void printInfo(){
 		System.out.println("to : " + to + " from : " + from + " id : "
 				+ id + " bandwith : " + bandwith);
 	}
 	
-	public String getInfo(boolean insert){
+	/**
+	 * Get the proper virtual link information depending on action
+	 * @param action - a boolean that is true represents an insert else an update against DB
+	 * @return
+	 */
+	public String getInfo(boolean action){
 		String insertVlink = id + "','" + bandwith + "','" + to + "','" + from;
 		String updateVlink = "bandwith=" + bandwith + ",to=" + to + ",from=" + from;
-		if(insert)
+		if(action)
 			return insertVlink;
 		return updateVlink;
 	}
 	
-	public ErrorCheck check_vlink() {
+	/**
+	 * Check if the virtual link information given is wrong
+	 * @return
+	 */
+	public ErrorCheck checkVLink() {
 		if(id.isEmpty() || id == null || bandwith.isEmpty() || bandwith == null ||
 				to.isEmpty() || to == null || from.isEmpty() || from == null){
 			return ErrorCheck.VLINK_NOT_COMPLETED;
@@ -79,6 +126,11 @@ public class VirtualLink{
 		return ErrorCheck.ALL_OK;
 	}
 	
+	/**
+	 * Check if the DB row given is the same as this current virtual link  
+	 * @param rs - the result of the select
+	 * @return
+	 */
 	public boolean checkRow(ResultSet rs){
 		try{
 			while(rs.next()){

@@ -51,6 +51,9 @@ public class VDC {
 		this.vlinks = vlinks;
 	}
 	
+	/**
+	 * Creates an empty instance of a VDC.
+	 */
 	public VDC(){
 		
 	}
@@ -87,35 +90,72 @@ public class VDC {
 		this.vlinks.add(vlinks);
 	}
 	
-	/** Obtains the collection of virtual nodes of the VDC.
-	 *
-	 * @return An ArrayList&ltVirtualNode&gt containing the virtual nodes requested within the VDC.
+	/**
+	 * Obtain the virtual node identified by the name of the virtual node.
+	 * @param id the name of the virtual node
+	 * @return
 	 */
-	public VirtualNode getVnode(String id){
+	public VirtualNode getVNodeByName(String id){
 		for(VirtualNode aux : vnodes)
 			if(aux.getId().equals(id))
 				return aux;
 		return null;
 	}
 	
-	public VirtualNode getVnode_(int i){
+	/**
+	 * Obtain the virtual node identified by a list position 
+	 * @param i the position of the list
+	 * @return
+	 */
+	public VirtualNode getVNodeByPos(int i){
 		return vnodes.get(i);
 	}
 	
-	public VirtualLink getVlink_(int i){
+	/**
+	 * Obtain the virtual link identified by a list position
+	 * @param i the position of the list
+	 * @return
+	 */
+	public VirtualLink getVLinkByPos(int i){
 		return vlinks.get(i);
 	}
 	
-	public int getNumElemVnode(){
+	/**
+	 * Get the virtual node id
+	 * @param i the list position of the virtual node
+	 * @return
+	 */
+	public String getVNodeID(int i){
+		return vnodes.get(i).getId();
+	}
+	
+	/**
+	 * Get the virtual link id
+	 * @param i the list position of the virtual link
+	 * @return
+	 */
+	public String getVLinkID(int i){
+		return vlinks.get(i).getID();
+	}
+	
+	/**
+	 * Obtain the number of virtual node in a VDC
+	 * @return
+	 */
+	public int getSizeVNode(){
 		return vnodes.size();
 	}
 	
-	public int getNumElemVlink(){
+	/**
+	 * Obtain the number of virtual link in a VDC
+	 * @return
+	 */
+	public int getSizeVLink(){
 		return vlinks.size();
 	}
 
 	/**
-	 * Se realiza un insert contra la tabla vdc de la base de datos
+	 * Performs an insert against the DB, more precisely, VDC table 
 	 * @throws SQLException
 	 */
 	public void updateVdc() throws SQLException{
@@ -124,9 +164,9 @@ public class VDC {
 	}
 	
 	/**
-	 * Se reliza una accion contra la tabla vnode de la base de datos
-	 * @param i
-	 * @param insert = Si true: insert, sino update
+	 * Performs an insert or update against the DB, more precisely, virtual node table
+	 * @param i the position in the list
+	 * @param insert = If true insert else update
 	 * @throws SQLException
 	 */
 	public void updateVnode(int i, boolean insert) throws SQLException{	
@@ -135,14 +175,12 @@ public class VDC {
 			String id = vnodes.get(i).getId();
 			String label = vnodes.get(i).getLabel();
 			db.newEntryDB("INSERT INTO vnode VALUES ('" + id + "','" + label + "','" + tenantID + "')");
-			//System.out.println("insert vnode");
 		}			
 		else{
 			PreparedStatement ps = db.prepareStatement("UPDATE vnode SET label = ? WHERE id= ?");
 			ps.setString(1, vnodes.get(i).getLabel());
 			ps.setString(2, vnodes.get(i).getId());
 			ps.executeUpdate();
-			//System.out.println("update vnode");
 		}
 		for(VirtualNode aux : vnodes)
 			aux.assignIDtoVM();
@@ -150,35 +188,39 @@ public class VDC {
 	}
 	
 	/**
-	 * Se realiza una accion contra la tabla vlink de la base de datos
-	 * @param i
-	 * @param insert = Si true: insert, sino update
+	 * Performs an insert or update against the DB, more precisely, virtual link table
+	 * @param i the position in the list
+	 * @param insert = If true insert else update
 	 * @throws SQLException
 	 */
 	public ErrorCheck updateVlink(int i, boolean insert) throws SQLException{
 		DataBase db = DataBase.getInstance();
-		ErrorCheck ec = validateVnode(vlinks.get(i).getDestination(),vlinks.get(i).getSource());
+		ErrorCheck ec = validateVLinkReferences(vlinks.get(i).getDestination(),vlinks.get(i).getSource());
 		if(insert && ec.equals(ErrorCheck.ALL_OK)){
-			String id = vlinks.get(i).getId();
+			String id = vlinks.get(i).getID();
 			String bandwith = vlinks.get(i).getBandwith();
 			String to = vlinks.get(i).getDestination();
 			String from = vlinks.get(i).getSource();
 			db.newEntryDB("INSERT INTO vlink VALUES ('" + id + "','" + bandwith + "','" + to + "','" +from + "')");
-			//System.out.println("insert vlink");
 		}
 		else if(!insert && ec.equals(ErrorCheck.ALL_OK)){
 			PreparedStatement ps = db.prepareStatement("UPDATE vlink SET bandwith=?,fk_to=?,fk_from=? WHERE id=?");
 			ps.setString(1, vlinks.get(i).getBandwith());
 			ps.setString(2, vlinks.get(i).getDestination());
 			ps.setString(3, vlinks.get(i).getSource());
-			ps.setString(4, vlinks.get(i).getId());
+			ps.setString(4, vlinks.get(i).getID());
 			ps.executeUpdate();
-			//System.out.println("update vlink");
 		}
 		return ec;
 	}
 	
-	private ErrorCheck validateVnode(String to, String from){
+	/**
+	 * Check if the virtual link references of a virtual node exists
+	 * @param to Reference of a destination virtual node
+	 * @param from Reference of a source virtual node
+	 * @return
+	 */
+	private ErrorCheck validateVLinkReferences(String to, String from){
 		boolean retVal1 = false;
 		boolean retVal2 = false;
 		for( VirtualNode aux : vnodes ){
@@ -194,7 +236,7 @@ public class VDC {
 	}
 	
 	/**
-	 * Imprime la estructura vdc
+	 * Print the VDC structure defined
 	 */
 	public void printInfo(){
 		System.out.println("tenant_id : " + tenantID);
@@ -210,11 +252,11 @@ public class VDC {
 	}
 	
 	/**
-	 * Se hace una query contra la tabla vdc de la base de datos 
+	 * Prepare a select statement against VDC table 
 	 * @return
 	 * @throws SQLException
 	 */
-	public PreparedStatement entryCheckerDB_vdc() throws SQLException{
+	public PreparedStatement prepareSelectVDC() throws SQLException{
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT tenantID FROM vdc WHERE tenantID = ?");
 		ps.setString(1, tenantID);
@@ -222,14 +264,14 @@ public class VDC {
 	}
 	
 	/**
-	 * Se hace una query contra la tabla vnode de la base de datos
-	 * @param i
+	 * Prepare a select statement against virtual node table
+	 * @param i the list position of the virtual node
 	 * @return
 	 * @throws SQLException
 	 */
-	public PreparedStatement entryCheckerDB_vnode(int i) throws SQLException{
+	public PreparedStatement prepareSelectVNode(int i) throws SQLException{
 		VirtualNode aux = vnodes.get(i);
-		aux.setId(tenantID+":"+aux.getId());
+		aux.setID(tenantID+":"+aux.getId());
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vnode WHERE id=?");
 		ps.setString(1, aux.getId());
@@ -237,24 +279,24 @@ public class VDC {
 	}
 	
 	/**
-	 * Se hace una query contra la tabla vlink de la base de datos
-	 * @param i
+	 * Prepare a select statement against virtual link table
+	 * @param i the list position of the virtual link
 	 * @return
 	 * @throws SQLException
 	 */
-	public PreparedStatement entryCheckerDB_vlink(int i) throws SQLException{
+	public PreparedStatement prepareSelectVLink(int i) throws SQLException{
 		VirtualLink aux = vlinks.get(i);
-		aux.setId(tenantID+":"+aux.getId());
+		aux.setID(tenantID+":"+aux.getID());
 		aux.setDestination(tenantID+":"+aux.getDestination());
 		aux.setSource(tenantID+":"+aux.getSource());
 		DataBase db = DataBase.getInstance();
 		PreparedStatement ps = db.prepareStatement("SELECT id FROM vlink WHERE id=?");
-		ps.setString(1, aux.getId());
+		ps.setString(1, aux.getID());
 		return ps;	
 	}
 	
 	/**
-	 * Se hace un check del json informado una vez parseado a la estructura VDC
+	 * Check the vdc defined in order to find incomplete fields
 	 * @return
 	 */
 	public ErrorCheck checkVDC(){
@@ -264,13 +306,13 @@ public class VDC {
 		else{
 			ErrorCheck ec;
 			for(VirtualNode aux : vnodes){
-				ec = aux.check_vnode();
+				ec = aux.checkVNode();
 				if(ec.equals(ErrorCheck.VNODE_NOT_COMPLETED) || ec.equals(ErrorCheck.VM_NOT_COMPLETED)){
 					return ec;
 				}
 			}
 			for(VirtualLink aux : vlinks){
-				ec = aux.check_vlink();
+				ec = aux.checkVLink();
 				if(ec.equals(ErrorCheck.VLINK_NOT_COMPLETED)){
 					return ec;
 				}
@@ -280,57 +322,39 @@ public class VDC {
 	}
 	
 	/**
-	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
-	 * @param rs
+	 * Check if exist an equal tenantID at VDC table
+	 * @param rs the result of the select
 	 * @return
 	 */
-	public boolean checkRow(ResultSet rs){
+	public boolean checkRowDBVDC(ResultSet rs){
 		try{
 			while(rs.next()){
 				if(rs.getString("tenantID").equals(tenantID))
 					return false;
 			}
 		}catch(SQLException e){
-			System.err.println(e);
+			e.printStackTrace();
 		}
 		return true;
 	}
 	
 	/**
-	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
-	 * @param rs
-	 * @param i
+	 * Check if exist an equal virtual node at virtual node table
+	 * @param rs the result of the select
+	 * @param i the list position of the virtual node
 	 * @return
 	 */
-	public boolean checkRow_vnode(ResultSet rs, int i){
-		return vnodes.get(i).checkRow(rs);
+	public boolean checkRowDBVNode(ResultSet rs, int i){
+		return vnodes.get(i).checkRowDBVNode(rs);
 	}
 	
 	/**
-	 * Comprueba si ya existe una entrada en la base de datos con el mismo id
-	 * @param rs
-	 * @param i
+	 * Check if exist an equal virtual link at virtual link table
+	 * @param rs the result of the select
+	 * @param i the list position of the virtual link
 	 * @return
 	 */
-	public boolean checkRow_vlink(ResultSet rs, int i){
+	public boolean checkRowDBVLink(ResultSet rs, int i){
 		return vlinks.get(i).checkRow(rs);
-	}
-	
-	/**
-	 * Devuelve el id del vnode solicitado
-	 * @param i
-	 * @return
-	 */
-	public String getIdVnode(int i){
-		return vnodes.get(i).getId();
-	}
-	
-	/**
-	 * Devuelve el id del vlink solicitado
-	 * @param i
-	 * @return
-	 */
-	public String getIdVlink(int i){
-		return vlinks.get(i).getId();
 	}
 }

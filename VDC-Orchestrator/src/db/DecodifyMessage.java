@@ -24,11 +24,11 @@ public class DecodifyMessage {
 		if(ec.equals(ErrorCheck.ALL_OK)){
 			db = DataBase.getInstance();
 			try{
-				rs = db.queryDB(vdc.entryCheckerDB_vdc());
-				if(vdc.checkRow(rs))
+				rs = db.queryDB(vdc.prepareSelectVDC());
+				if(vdc.checkRowDBVDC(rs))
 					vdc.updateVdc();
-				decodifyVnode(vdc.getNumElemVnode());
-				ErrorCheck ecbis = decodifyVlink(vdc.getNumElemVlink());
+				decodifyVnode(vdc.getSizeVNode());
+				ErrorCheck ecbis = decodifyVlink(vdc.getSizeVLink());
 				if(ecbis.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG))
 					return ecbis;
 				System.out.println("*************** DB updated ***************");
@@ -50,8 +50,8 @@ public class DecodifyMessage {
 	 */
 	private void decodifyVnode(int vnode) throws SQLException{
 		for(int i = 0; i < vnode; ++i){
-			rs = db.queryDB(vdc.entryCheckerDB_vnode(i));
-			vdc.updateVnode(i,vdc.checkRow_vnode(rs, i));
+			rs = db.queryDB(vdc.prepareSelectVNode(i));
+			vdc.updateVnode(i,vdc.checkRowDBVNode(rs, i));
 		}
 	}
 	
@@ -66,8 +66,8 @@ public class DecodifyMessage {
 	private ErrorCheck decodifyVlink(int vlink) throws SQLException{
 		ErrorCheck ec;
 		for(int i = 0; i < vlink; ++i){
-			rs = db.queryDB(vdc.entryCheckerDB_vlink(i));
-			ec = vdc.updateVlink(i,vdc.checkRow_vlink(rs,i));
+			rs = db.queryDB(vdc.prepareSelectVLink(i));
+			ec = vdc.updateVlink(i,vdc.checkRowDBVLink(rs,i));
 			if(ec.equals(ErrorCheck.VNODE_FROM_VLINK_WRONG))
 				return ec;
 		}
