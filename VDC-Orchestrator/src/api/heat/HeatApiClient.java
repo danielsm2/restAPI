@@ -11,6 +11,9 @@ public class HeatApiClient {
 		try{
 			URL url = new URL(heatURL + " ");
 			http = (HttpURLConnection) url.openConnection();
+			http.setRequestMethod("POST");
+			http.setRequestProperty("Content-Type", "application/json");
+			
 			
 		} catch(Exception e){
 			e.printStackTrace();

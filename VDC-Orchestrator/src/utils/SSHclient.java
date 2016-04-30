@@ -14,10 +14,20 @@ public class SSHclient {
 	JSch jsch;
 	Session session;
 	
+	/**
+	 * Creates a new instance of SSHclient
+	 */
 	public SSHclient() {
 		jsch = new JSch();
 	}
 
+	/**
+	 * Set up a ssh session in order to connect into it 
+	 * @param user - user which will be logged
+	 * @param hostIP - IP representing the target terminal
+	 * @param port - port in which will be listening
+	 * @param password - user's password
+	 */
 	public void connect(String user, String hostIP, int port, String password){
 		try {
 			session=jsch.getSession(user, hostIP, port);
@@ -29,10 +39,17 @@ public class SSHclient {
 		}
 	}
 	
+	/**
+	 * Disconnect the connection
+	 */
 	public void disconnect(){
 		session.disconnect();
 	}
 	
+	/**
+	 * Execute an ifconfig command in order to get the required information
+	 * @return
+	 */
 	public String[] ExecuteIfconfig(){		
 		StringBuilder outputBuffer = new StringBuilder();
 		

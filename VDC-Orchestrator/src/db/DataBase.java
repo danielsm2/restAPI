@@ -43,7 +43,7 @@ public class DataBase {
 	private static DataBase instance;
 	
 	/**
-	 * Singleton de la clase DataBase 
+	 * DataBase singleton  
 	 * @return
 	 */
 	public static DataBase getInstance(){
@@ -54,7 +54,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * La base de datos pasa a estar en estado running
+	 * The database pass to be running
 	 */
 	public void  startDB(){
 		loadDriver();
@@ -68,7 +68,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * La base de datos pasa a estar parada
+	 * Stops the database
 	 */
 	public void stopDB(){
 		/*try{
@@ -79,7 +79,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Cargar el driver de mysl
+	 * Load mysql driver 
 	 */
 	private void loadDriver(){
 		try{
@@ -92,7 +92,7 @@ public class DataBase {
 	}
 	
 	/**
-	 * Crear una conexión con la base de datos
+	 * Creates a database connection
 	 */
 	private void createConnection(){
 		try{
@@ -105,10 +105,10 @@ public class DataBase {
 	}
 	
 	/**
-	 * Crear una base de datos si no existe
+	 * Creates a database if it does not exist
 	 */
-	/*private void createDB(){
-		System.out.println("Creating new DB...");
+	private void createDB(){ //TODO
+		/*System.out.println("Creating new DB...");
 		try{
 			//stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS PEOPLE");
 			//startTable();
@@ -117,8 +117,8 @@ public class DataBase {
 			System.err.println("Can not create a statement");
 			System.err.println(e);
 			System.exit(1);
-		}
-	}*/
+		}*/
+	}
 	
 	/**
 	 * Hace un volcado de la base de datos a través del campo informado tenantID

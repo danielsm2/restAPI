@@ -24,11 +24,13 @@ import vdc.VDC;
 public class JsonParser {
 
 	private JsonReader reader;
-	
-	public JsonParser() {
-		
-	}
-	
+
+	/**
+	 * Parse the input json related to a flavor list and return an array of flavors
+	 * @param in - the flavor list json
+	 * @return
+	 * @throws IOException
+	 */
 	public ArrayList<Flavor> readFlavorList(InputStream in) throws IOException {
 		
 		ArrayList<Flavor> flavors = new ArrayList<Flavor>(0);
@@ -72,6 +74,12 @@ public class JsonParser {
 		return flavors;
 	}
 	
+	/**
+	 * Parse the flavor json in order to save information as disk, ram and virtual cpus
+	 * @param in - the flavor json
+	 * @param flavor - the flavor which to save the data
+	 * @throws IOException
+	 */
 	public void readFlavor(InputStream in, Flavor flavor) throws IOException {
 		
 		try {
@@ -109,6 +117,12 @@ public class JsonParser {
 		}
 	}
 	
+	/**
+	 * Parse a Host list json in which is filtered by the value 'compute' in order to select the potential host
+	 * @param in - the host list json
+	 * @return
+	 * @throws IOException
+	 */
 	public Map<String,Host> readHostList(InputStream in) throws IOException {
 		
 		Map<String,Host> hosts = new HashMap<String,Host>(0);
@@ -152,6 +166,78 @@ public class JsonParser {
 		
 		return hosts;
 	}
+	
+	/**
+	 * Parse the host json in order to get data as cpu, cpu_used, disk, disk_used, memory and memory_used
+	 * @param in - the host json
+	 * @param host - Host instance in which the information will be saved
+	 * @throws IOException
+	 */
+	public void readHost(InputStream in, Host host) throws IOException {
+		
+		try {
+			
+			int cpu = 0, cpu_used = 0;
+			double disk = 0, disk_used = 0;
+			double memory = 0, memory_used = 0;
+			
+			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginObject();
+			reader.nextName();
+			reader.beginArray();
+			while(reader.hasNext()) {
+				reader.beginObject();
+				reader.nextName();
+				reader.beginObject();
+				int c = 0;
+				double d = 0;
+				double m = 0;
+				String project = null;
+				while(reader.hasNext()) {
+					String n = reader.nextName();
+					if (n.equals("cpu")) {
+						c = reader.nextInt();
+					}else if(n.equals("disk_gb")) {
+						d = reader.nextDouble();
+					} else if(n.equals("memory_mb")){
+						m = reader.nextDouble();
+					} else if(n.equals("project")) {
+						project = reader.nextString();
+					} else {
+						reader.skipValue();
+					}
+				}
+				reader.endObject();
+				reader.endObject();
+				if(project.equals("(total)")){
+					cpu = c;
+					disk = d;
+					memory = m;
+				} else if(project.equals("(used_now)")){
+					cpu_used = c;
+					disk_used = d;
+					memory_used = m;
+				}
+				
+			}
+			host.setCpus(cpu-cpu_used);
+			host.setDisk(disk-disk_used);
+			host.setMemory(memory-memory_used);
+			reader.endArray();
+			reader.endObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			reader.close();
+		}
+	}
+	
+	/**
+	 * Given a topology of the data center, rebuild and select the no virtual switches, no virtual host and links between them
+	 * @param in - the topology input
+	 * @param topology - Instance which will be saved the data
+	 * @param hosts - A map representing the no virtual host
+	 */
 	public void readTopology(InputStream in, Topology topology, Map<String, Host> hosts){
 		try{
 			
@@ -275,65 +361,11 @@ public class JsonParser {
 		}
 	}
 	
-	public void readHost(InputStream in, Host host) throws IOException {
-		
-		try {
-			
-			int cpu = 0, cpu_used = 0;
-			double disk = 0, disk_used = 0;
-			double memory = 0, memory_used = 0;
-			
-			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-			reader.beginObject();
-			reader.nextName();
-			reader.beginArray();
-			while(reader.hasNext()) {
-				reader.beginObject();
-				reader.nextName();
-				reader.beginObject();
-				int c = 0;
-				double d = 0;
-				double m = 0;
-				String project = null;
-				while(reader.hasNext()) {
-					String n = reader.nextName();
-					if (n.equals("cpu")) {
-						c = reader.nextInt();
-					}else if(n.equals("disk_gb")) {
-						d = reader.nextDouble();
-					} else if(n.equals("memory_mb")){
-						m = reader.nextDouble();
-					} else if(n.equals("project")) {
-						project = reader.nextString();
-					} else {
-						reader.skipValue();
-					}
-				}
-				reader.endObject();
-				reader.endObject();
-				if(project.equals("(total)")){
-					cpu = c;
-					disk = d;
-					memory = m;
-				} else if(project.equals("(used_now)")){
-					cpu_used = c;
-					disk_used = d;
-					memory_used = m;
-				}
-				
-			}
-			host.setCpus(cpu-cpu_used);
-			host.setDisk(disk-disk_used);
-			host.setMemory(memory-memory_used);
-			reader.endArray();
-			reader.endObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			reader.close();
-		}
-	}
-	
+	/**
+	 * Parse a json in order to get the tenants of OpenStack
+	 * @param json - the input json
+	 * @return
+	 */
 	public List<Tenant> getTenants(String json){
 		Gson gson = new Gson();
 		TenantList tenants = (TenantList) gson.fromJson(json, TenantList.class);
@@ -342,8 +374,8 @@ public class JsonParser {
 	}
 	
 	/**
-	 * Devuelve un string resultado de transformar un objeto VDC a json
-	 * @param vdc
+	 * Parse a VDC to json in order to return the data to Horizon
+	 * @param vdc - VDC instance which will be parsed
 	 * @return
 	 */
 	public String toJson(VDC vdc){
@@ -356,8 +388,8 @@ public class JsonParser {
 	}
 	
 	/**
-	 * Devuelve un objeto de tipo VDC resultado de parsear un json
-	 * @param json
+	 * Parser of a json in order to get a VDC instance
+	 * @param json - the input json
 	 * @return
 	 */
 	public VDC fromJson(String json){
