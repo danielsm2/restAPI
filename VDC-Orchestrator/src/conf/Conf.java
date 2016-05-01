@@ -21,6 +21,7 @@ public class Conf {
 	public static String IP_ODL;
 	public static String User_ODL;
 	public static String Pass_ODL;
+	public static String IP_Heat;
 	public static String User_BD_Horizon;
 	public static String Pass_BD_Horizon;
 	public static String User_BD_Nova;
@@ -42,6 +43,7 @@ public class Conf {
 		writer.println("IP_ODL=172.26.37.89:8181");
 		writer.println("User_ODL=admin");
 		writer.println("Pass_ODL=admin");
+		writer.println("IP_Heat=172.26.37.249:8004");
 		writer.println("User_BD_Horizon=root");
 		writer.println("Pass_BD_Horizon=password");
 		writer.println("User_BD_Nova=root");
@@ -101,6 +103,8 @@ public class Conf {
 				User_ODL = line.split("=")[1];
 			else if(line.contains("Pass_ODL"))
 				Pass_ODL = line.split("=")[1];
+			else if(line.contains("IP_Heat"))
+				IP_Heat = line.split("=")[1];
 			else if(line.contains("User_BD_Horizon"))
 				User_BD_Horizon = line.split("=")[1];
 			else if(line.contains("Pass_BD_Horizon"))

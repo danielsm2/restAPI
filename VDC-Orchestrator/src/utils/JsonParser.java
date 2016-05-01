@@ -1,8 +1,10 @@
 package utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -398,5 +400,32 @@ public class JsonParser {
 		vdc.printInfo();
 			
 		return vdc;
+	}
+	
+	public List<String> getStackID(InputStream in) {
+		String id = null;
+		String url = null;
+		try {
+			reader = new JsonReader(new InputStreamReader(in,"UTF-8"));
+			reader.beginObject();
+			while(reader.hasNext()){
+				String aux = reader.nextName();
+				if(aux.equals("id")){
+					id = reader.nextString();
+				}
+				else if(aux.equals("links")){
+					reader.beginObject();
+					if(reader.nextString().equals("href")){
+						url = reader.nextName();
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		List<String> stack = new ArrayList<String>(2);
+		stack.add(id);
+		stack.add(url);
+		return stack;
 	}
 }

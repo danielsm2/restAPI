@@ -35,6 +35,7 @@ public class DataBase {
 
 	private Map<String,VDC> setVDC = new HashMap<String,VDC>();
 
+	private String currentTenant;
 	
 	Connection c;
 	Statement stmt;
@@ -254,6 +255,7 @@ public class DataBase {
 	}
 	
 	public void saveVDC(VDC vdc){
+		currentTenant = vdc.getTenant();
 		if(vdc.getVNodeID(0).contains(":")){
 			for(int i = 0; i < vdc.getSizeVLink(); ++i){
 				VirtualLink aux = vdc.getVLinkByPos(i);
@@ -297,5 +299,9 @@ public class DataBase {
 	public void deleteVDC(String tenant){
 		if(setVDC.containsKey(tenant))
 			setVDC.remove(tenant);
+	}
+	
+	public String getCurrentTenant(){
+		return currentTenant;
 	}
 }

@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import api.heat.HeatApiClient;
 import api.horizon.HorizonApiHandler;
 import api.horizon.HorizonApiServer;
 import api.keystone.KeystoneApiClient;
@@ -38,14 +39,14 @@ public class Orchestrator {
 		try {
 			Conf.readConf();
 			
-			DataBase db = DataBase.getInstance();
+			/*DataBase db = DataBase.getInstance();
 			db.startDB();
 		
 			HorizonApiServer horizonapi = new HorizonApiServer(Conf.IP_Horizon,Integer.parseInt(Conf.Port_Horizon),0);
 			horizonapi.setContext("/orchestrator/algorithms/vdc/", new HorizonApiHandler(), Conf.User_Horizon, Conf.Pass_Horizon);
 			horizonapi.start();
 
-			System.out.println("Server is listening...");
+			System.out.println("Server is listening...");*/
 
 			/*InputStream is = null;
 			try{
@@ -93,6 +94,8 @@ public class Orchestrator {
 			//Map<String,Host> hosts = novaapi.getHosts(Conf.IP_Nova, token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
+			HeatApiClient heatapi = new HeatApiClient();
+			heatapi.deployVDC("", "");
 			
 			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();
