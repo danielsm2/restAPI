@@ -75,11 +75,11 @@ public class Orchestrator {
 			JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			String token = keystoneapi.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
+			String token = keystoneapi.getToken("http://" + Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
 			//String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
 			System.out.println(token);
 
-			List<Tenant> tenants = keystoneapi.getTenant(Conf.IP_Keystone, token);
+			List<Tenant> tenants = keystoneapi.getTenant("http://" + Conf.IP_Keystone, token);
 			String id = "";
 			for(Tenant aux : tenants){
 				if(aux.getName().equals("admin"))
@@ -91,11 +91,11 @@ public class Orchestrator {
 			
 			System.out.println(flavors.toString());*/
 			
-			Map<String,Host> hosts = novaapi.getHosts(Conf.IP_Nova, token, parser, id);
+			Map<String,Host> hosts = novaapi.getHosts("http://" + Conf.IP_Nova, token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
 			HeatApiClient heatapi = new HeatApiClient();
-			heatapi.deployVDC(Conf.IP_Heat, id);
+			heatapi.deployVDC("http://" + Conf.IP_Heat, id);
 			
 			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();
