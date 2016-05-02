@@ -85,17 +85,17 @@ public class Orchestrator {
 				if(aux.getName().equals("admin"))
 					id = aux.getId();
 			}
-			NovaApiClient novaapi = new NovaApiClient();
+			//NovaApiClient novaapi = new NovaApiClient();
 			
 			/*ArrayList<Flavor> flavors = novaapi.getFlavors(Conf.IP_Nova, token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
-			Map<String,Host> hosts = novaapi.getHosts("http://" + Conf.IP_Nova, token, parser, id);
+			//Map<String,Host> hosts = novaapi.getHosts("http://" + Conf.IP_Nova, token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
 			HeatApiClient heatapi = new HeatApiClient();
-			heatapi.deployVDC("http://" + Conf.IP_Heat, id);
+			heatapi.deployVDC("http://" + Conf.IP_Heat, id, token);
 			
 			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();

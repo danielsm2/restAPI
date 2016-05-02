@@ -20,19 +20,20 @@ public class HeatApiClient {
 	Gson gson = new Gson();
 	DataBase db = DataBase.getInstance();
 
-	public void deployVDC(String heatURL, String tenantID){
+	public void deployVDC(String heatURL, String tenantID, String token){
 		HttpURLConnection http = null;
 		
 		try{
-			URL url = new URL("http://" + heatURL + "/v1/" + tenantID + "stacks");
+			URL url = new URL(heatURL + "/v1/" + tenantID + "/stacks");
 			http = (HttpURLConnection) url.openConnection();
 			http.setRequestMethod("POST");
 			http.setRequestProperty("Content-Type", "application/json");
+			http.setRequestProperty("X-Auth-Token", token);
 			
 			JsonElement je1 = createNetwork("test_network_1","OS::Neutron::Net");
 			JsonElement je2 = createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet");
-			JsonElement je3 = createHost("host1", "edb49ab7-3114-4193-b991-a5006f6c17c4", "m1.nano","nova","OS::Nova::Server");
-			JsonElement je4 = createHost("host2", "edb49ab7-3114-4193-b991-a5006f6c17c4", "m1.nano","nova","OS::Nova::Server");
+			JsonElement je3 = createHost("host1", "80671221-3749-42d6-88b2-f1389d88a9c3", "m1.nano","nova","OS::Nova::Server");
+			JsonElement je4 = createHost("host2", "80671221-3749-42d6-88b2-f1389d88a9c3", "m1.nano","nova","OS::Nova::Server");
 			
 			JsonObject resources= new JsonObject();
 			resources.add("test_network_1", je1);
@@ -56,10 +57,11 @@ public class HeatApiClient {
 			
 			int code = http.getResponseCode();
 			if(code == HttpURLConnection.HTTP_CREATED){
+				System.out.println("Ok");
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
 				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
-				saveStack(sql);
+				//saveStack(sql);
 			}
 		} catch(Exception e){
 			e.printStackTrace();
