@@ -72,7 +72,7 @@ public class Orchestrator {
 			}catch(Exception e){
 				e.printStackTrace();
 			}*/
-			/*JsonParser parser = new JsonParser();
+			JsonParser parser = new JsonParser();
 			
 			KeystoneApiClient keystoneapi = new KeystoneApiClient();
 			String token = keystoneapi.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
@@ -85,17 +85,17 @@ public class Orchestrator {
 				if(aux.getName().equals("admin"))
 					id = aux.getId();
 			}
-			NovaApiClient novaapi = new NovaApiClient();*/
+			NovaApiClient novaapi = new NovaApiClient();
 			
 			/*ArrayList<Flavor> flavors = novaapi.getFlavors(Conf.IP_Nova, token, parser, id);
 			
 			System.out.println(flavors.toString());*/
 			
-			//Map<String,Host> hosts = novaapi.getHosts(Conf.IP_Nova, token, parser, id);
+			Map<String,Host> hosts = novaapi.getHosts(Conf.IP_Nova, token, parser, id);
 			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
 			
 			HeatApiClient heatapi = new HeatApiClient();
-			heatapi.deployVDC("", "");
+			heatapi.deployVDC(Conf.IP_Heat, id);
 			
 			/*NovaDB db = NovaDB.getInstance();
 			db.startDB();

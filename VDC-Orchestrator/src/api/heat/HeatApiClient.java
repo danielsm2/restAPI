@@ -24,11 +24,10 @@ public class HeatApiClient {
 		HttpURLConnection http = null;
 		
 		try{
-			/*URL url = new URL("http://" + heatURL + "/v1/" + tenantID + "stacks");
+			URL url = new URL("http://" + heatURL + "/v1/" + tenantID + "stacks");
 			http = (HttpURLConnection) url.openConnection();
 			http.setRequestMethod("POST");
-			http.setRequestProperty("Content-Type", "application/json");*/
-			
+			http.setRequestProperty("Content-Type", "application/json");
 			
 			JsonElement je1 = createNetwork("test_network_1","OS::Neutron::Net");
 			JsonElement je2 = createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet");
