@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -14,6 +15,9 @@ import com.google.gson.JsonObject;
 
 import db.DataBase;
 import utils.JsonParser;
+import vdc.VDC;
+import vdc.VirtualMachine;
+import vdc.VirtualNode;
 
 public class HeatApiClient {
 
@@ -30,16 +34,23 @@ public class HeatApiClient {
 			http.setRequestProperty("Content-Type", "application/json");
 			http.setRequestProperty("X-Auth-Token", token);
 			
-			JsonElement je1 = createNetwork("test_network_1","OS::Neutron::Net");
-			JsonElement je2 = createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet");
-			JsonElement je3 = createHost("host1", "80671221-3749-42d6-88b2-f1389d88a9c3", "m1.nano","nova","OS::Nova::Server");
-			JsonElement je4 = createHost("host2", "80671221-3749-42d6-88b2-f1389d88a9c3", "m1.nano","nova","OS::Nova::Server");
-			
+			VDC vdc = db.getLocalVDC(tenantID);
+			List<JsonElement> je = new ArrayList<JsonElement>();
 			JsonObject resources= new JsonObject();
-			resources.add("test_network_1", je1);
-			resources.add("test_subnet_1", je2);
-			resources.add("host1", je3);
-			resources.add("host2", je4);
+
+			je.add(createNetwork("test_network_1","OS::Neutron::Net"));
+			je.add(createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet"));
+			resources.add("test_network_1", je.get(0));
+			resources.add("test_subnet_1", je.get(1));
+			
+			for(int i = 0; i < vdc.getSizeVNode(); ++i){
+				VirtualNode vn = vdc.getVNodeByPos(i);
+				for(int j = 0; j < vn.getSizeVirtualMachine(); ++j){
+					VirtualMachine vm = vn.getVirtualMachine(j);
+					je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova","OS::Nova::Server"));
+					resources.add("host" + i +j, je.get(je.size()-1));
+				}
+			}
 			
 			Template template = new Template("2015-10-15", "simple template to test heat commands", resources);
 			
@@ -62,6 +73,9 @@ public class HeatApiClient {
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
 				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
 				//saveStack(sql);
+			}
+			else{
+				System.err.println(code + " " + http.getResponseMessage());
 			}
 		} catch(Exception e){
 			e.printStackTrace();
