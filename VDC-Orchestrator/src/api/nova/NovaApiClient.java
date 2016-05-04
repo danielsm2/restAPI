@@ -17,6 +17,14 @@ import vdc.VirtualMachine;
 
 public class NovaApiClient {
 	
+	private static NovaApiClient instance;
+	
+	public static NovaApiClient getInstance(){
+		if(instance == null)
+			return instance = new NovaApiClient();
+		else
+			return instance;
+	}
 	public NovaApiClient() {
 		
 	}
@@ -28,7 +36,7 @@ public class NovaApiClient {
 		HttpURLConnection connection = null;
 		
 		try {
-			URL url = new URL(novacontrollerurl+"/v2.1/" + id +"/flavors"); 
+			URL url = new URL("http://" + novacontrollerurl +":8774/v2.1/" + id +"/flavors"); 
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("X-Auth-Token", token);
@@ -55,7 +63,7 @@ public class NovaApiClient {
 	    			Flavor flavor = iterator.next();
 	    			
 	    			int idFlavor = flavor.getID();
-	    			url = new URL(novacontrollerurl+"/v2.1/" + id + "/flavors/"+idFlavor); 
+	    			url = new URL("http://" + novacontrollerurl+":8774/v2.1/" + id + "/flavors/"+idFlavor); 
 	    			connection = (HttpURLConnection)url.openConnection();
 	    			connection.setRequestMethod("GET");
 	    			connection.setRequestProperty("X-Auth-Token", token);
@@ -96,83 +104,6 @@ public class NovaApiClient {
 		return flavors;
 	}
 	
-	/*public ArrayList<Host> getHosts(String novacontrollerurl, String token, JsonParser parser) {
-		
-		ArrayList<Host> hosts = new ArrayList<Host>(0);
-		
-		HttpURLConnection connection = null;
-		
-		try {
-			URL url = new URL(novacontrollerurl+"/v2.1/" + id + "os-hosts"); 
-			connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("X-Auth-Token", token);
-			
-			int code = connection.getResponseCode();
-			
-			if(code == HttpURLConnection.HTTP_OK) {
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	            StringBuffer response = new StringBuffer();
-	            String inputLine = null;
-	 
-	            while ((inputLine = in.readLine()) != null) {
-	                response.append(inputLine);
-	            }
-	            in.close();
-	            
-	            String json = response.toString();
-	            	            
-	            hosts = parser.readHostList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
-	            
-	            Iterator<Host> iterator = hosts.iterator();
-	            
-	            while (iterator.hasNext()) {
-	            	
-	            	Host host = iterator.next();
-	            	
-	            	String host_name = host.getName();
-	            	
-	            	url = new URL(novacontrollerurl+"/v2.1/os-hosts/"+host_name);
-	    			connection = (HttpURLConnection)url.openConnection();
-	    			connection.setRequestMethod("GET");
-	    			connection.setRequestProperty("X-Auth-Token", token);
-	    			
-	    			code = connection.getResponseCode();
-	    			
-	    			if(code == HttpURLConnection.HTTP_OK) {
-	    				in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    	            response = new StringBuffer();
-	    	            inputLine = null;
-	    	 
-	    	            while ((inputLine = in.readLine()) != null) {
-	    	                response.append(inputLine);
-	    	            }
-	    	            in.close();
-	    	            
-	    	           json = response.toString();
-	    	           
-	    	           //System.out.println(json);
-
-	    	           parser.readHost(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), host);
-	    			}
-	            }
-			}
-			else {
-		    	System.out.println(code+" "+connection.getResponseMessage());
-		    }
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-		    if(connection != null) {
-		        connection.disconnect(); 
-		      }
-		}
-		
-		return hosts;
-	}*/
-	
 public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonParser parser, String id) {
 		
 		Map<String,Host> hosts = new HashMap<String,Host>();
@@ -180,7 +111,7 @@ public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonPar
 		HttpURLConnection connection = null;
 				
 		try {
-			URL url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts"); 
+			URL url = new URL("http://" + novacontrollerurl +":8774/v2.1/" + id + "/os-hosts"); 
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("X-Auth-Token", token);
@@ -203,7 +134,7 @@ public Map<String,Host> getHosts(String novacontrollerurl, String token, JsonPar
 	            hosts = parser.readHostList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
 	            
 	            for(Entry<String, Host> aux : hosts.entrySet()){
-	            	url = new URL(novacontrollerurl+"/v2.1/" + id + "/os-hosts/" + aux.getKey()); 
+	            	url = new URL("http://" + novacontrollerurl +":8774/v2.1/" + id + "/os-hosts/" + aux.getKey()); 
 	    			connection = (HttpURLConnection)url.openConnection();
 	    			connection.setRequestMethod("GET");
 	    			connection.setRequestProperty("X-Auth-Token", token);

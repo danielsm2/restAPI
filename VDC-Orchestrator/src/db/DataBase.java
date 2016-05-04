@@ -27,6 +27,7 @@ public class DataBase {
 	private String queryVNODE = "SELECT * FROM vnode WHERE fk_vdc=?";
 	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=? OR fk_from=?";
 	private String queryVM = "SELECT * FROM vm WHERE fk_vnode=?";
+	private String queryStack = "SELECT url FROM Stacks WHERE tenantID=?";
 	
 	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
 	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
@@ -121,6 +122,27 @@ public class DataBase {
 		}*/
 	}
 	
+	public boolean existVDC(String tenantID) throws SQLException{
+		ps = prepareStatement(queryVDC);
+		ps.setString(1, tenantID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next())
+			return true;
+		return false;
+	}
+	
+	public ErrorCheck deleteVDC(String tenantID) throws SQLException{
+		PreparedStatement aux = prepareStatement(deleteVDC);
+		aux.setString(1, tenantID);
+		if(aux.executeUpdate() == 1){
+			deleteLocalVDC(tenantID);
+			return ErrorCheck.ALL_OK;
+		}
+		else
+			//TODO create proper error check for this case
+			return ErrorCheck.BAD_CONTENT_TYPE;
+	}
+	
 	/**
 	 * Hace un volcado de la base de datos a través del campo informado tenantID
 	 * @param vdc : objeto que se construira si se hace un GET
@@ -139,11 +161,11 @@ public class DataBase {
 				if(request.equals("get"))
 					vdc.setTenant(rs.getString("tenantID"));
 				showDB(vdc, "vnode", foreignKey, request);
-				if(request.equals("delete")){
+				/*if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVDC);
 					aux.setString(1, foreignKey);
 					aux.executeUpdate();
-				}
+				}*/
 			}
 			else{
 				return ErrorCheck.TENANTID_NOT_FOUND;
@@ -158,11 +180,11 @@ public class DataBase {
 					vdc.addNodes(new VirtualNode(rs.getString("id").split(":")[1], rs.getString("label")));
 				showDB(vdc, "vm", rs.getString("id"), request);
 				showDB(vdc, "vlink", rs.getString("id"), request);
-				if(request.equals("delete")){
+				/*if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVNODE);
 					aux.setString(1, rs.getString("id"));
 					aux.executeUpdate();
-				}
+				}*/
 			}
 		}
 		else if(level.equals("vm")){
@@ -174,11 +196,11 @@ public class DataBase {
 					VirtualNode vnode = vdc.getVNodeByName(foreignKey.split(":")[1]);
 					vnode.addVirtualMachine(new VirtualMachine(rs.getString("label"), rs.getString("flavorID"), rs.getString("flavorName"),rs.getString("imageID")));
 				}
-				else if(request.equals("delete")){
+				/*else if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVM);
 					aux.setString(1, foreignKey);
 					aux.executeUpdate();
-				}
+				}*/
 				
 			}
 		}
@@ -190,12 +212,12 @@ public class DataBase {
 			while(rs.next()){
 				if(request.equals("get") && !checkID(rs.getString("id").split(":")[1], vdc))
 					vdc.addLinks(new VirtualLink(rs.getString("id").split(":")[1], rs.getString("bandwith"), rs.getString("fk_to").split(":")[1], rs.getString("fk_from").split(":")[1]));
-				else if(request.equals("delete")){
+				/*else if(request.equals("delete")){
 					PreparedStatement aux = prepareStatement(deleteVLINK);
 					aux.setString(1, foreignKey);
 					aux.setString(2, foreignKey);
 					aux.executeUpdate();
-				}		
+				}*/		
 			}
 			return ErrorCheck.ALL_OK;
 		}
@@ -284,7 +306,7 @@ public class DataBase {
 			showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
 	}
 	
-	public boolean checkVDC(String tenant){
+	public boolean checkLocalVDC(String tenant){
 		/*for(Entry<String, VDC> aux : setVDC.entrySet()){
 			System.out.println("tenant: " + aux.getKey());
 			aux.getValue().printInfo();
@@ -296,12 +318,19 @@ public class DataBase {
 		return setVDC.get(tenant);
 	}
 	
-	public void deleteVDC(String tenant){
+	public void deleteLocalVDC(String tenant){
 		if(setVDC.containsKey(tenant))
 			setVDC.remove(tenant);
 	}
 	
 	public String getCurrentTenant(){
 		return currentTenant;
+	}
+	
+	public String getStack(String tenantID) throws SQLException{
+		ps = prepareStatement(queryStack);
+		ps.setString(1, tenantID);
+		ResultSet rs = ps.executeQuery();
+		return rs.getString("url");
 	}
 }

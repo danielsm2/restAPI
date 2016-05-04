@@ -17,10 +17,18 @@ import utils.JsonParser;
 public class OdlApiClient {
 	HttpURLConnection t;
 	JsonParser parser = new JsonParser();
+	private static OdlApiClient instance;
+	
+	public static OdlApiClient getInstance(){
+		if(instance == null)
+			return instance = new OdlApiClient();
+		else 
+			return instance;
+	}
 	
 	public void getResources(Topology topology, Map<String, Host> hosts){
 			try {
-				URL url = new URL("http://" + Conf.IP_ODL + "/restconf/operational/network-topology:network-topology");
+				URL url = new URL("http://" + Conf.IP_ODL + ":8181/restconf/operational/network-topology:network-topology");
 				t = (HttpURLConnection) url.openConnection();
 				t.setRequestMethod("GET");
 				Encoder enc = Base64.getEncoder();

@@ -3,17 +3,33 @@ package api.horizon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Map.Entry;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import api.heat.HeatApiClient;
+import api.keystone.KeystoneApiClient;
+import api.nova.Flavor;
+import api.nova.Host;
+import api.nova.NovaApiClient;
+import api.odl.OdlApiClient;
+import conf.Conf;
 import db.DataBase;
 import db.DecodifyMessage;
+import db.NovaDB;
+import tenant.Tenant;
+import topology.Topology;
 import utils.JsonParser;
+import utils.SSHclient;
 import vdc.ErrorCheck;
 import vdc.VDC;
 
@@ -22,6 +38,14 @@ public class HorizonApiHandler implements HttpHandler{
 	private DecodifyMessage dm = new DecodifyMessage();
 	private VDC vdc;
 	private DataBase db = DataBase.getInstance();
+	NovaDB dbnova = NovaDB.getInstance();
+	private JsonParser parser = new JsonParser();
+
+	
+	HeatApiClient hac = HeatApiClient.getInstance();
+	KeystoneApiClient kac = KeystoneApiClient.getInstance();
+	NovaApiClient nac = NovaApiClient.getInstance();
+	OdlApiClient oac = OdlApiClient.getInstance();
 
 	public void handle(HttpExchange e) throws IOException {
 		
@@ -38,9 +62,62 @@ public class HorizonApiHandler implements HttpHandler{
 			try{
 				if(content != null && content.get(0).equals("application/json")){
 					vdc = parser.fromJson(message);
-					db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
+					//String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
+					//System.out.println(token);
+					if(db.existVDC(vdc.getTenant())){
+						//ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT");
+						//if(res == ErrorCheck.ALL_OK){
+							//TODO Eliminar stack de bd y local
+							db.deleteVDC(vdc.getTenant());
+					//	}
+						//else{
+							//resRequest(res, e, "POST", "");
+						//}
+					}
+					//db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
 					ErrorCheck ec = dm.startParse(vdc);
-					resRequest(ec,e,"POST","");		
+					resRequest(ec,e,"POST","");
+					
+					/*List<Tenant> tenants = kac.getTenant(Conf.IP_Keystone, token);
+					String id = "";
+					for(Tenant aux : tenants){
+						if(aux.getName().equals("admin"))
+							id = aux.getId();
+					}
+					
+					ArrayList<Flavor> flavors = nac.getFlavors(Conf.IP_Nova, token, parser, id);
+					
+					System.out.println(flavors.toString());
+					
+					Map<String,Host> hosts = nac.getHosts(Conf.IP_Nova, token, parser, id);
+					
+					dbnova.startDB();
+					ResultSet rs = dbnova.queryDB();
+					Host aux;
+					SSHclient ssh = new SSHclient();
+					
+					while(rs.next()){
+						if(hosts.containsKey(rs.getString("host"))){
+							aux = hosts.get(rs.getString("host"));
+							ssh.connect(Conf.User_Compute,rs.getString("host_ip"),22,Conf.Pass_Compute);					
+							String[] output = ssh.ExecuteIfconfig();
+							Map<String,String> mac = checkMac(output, aux);
+							for(Entry<String, String> set : mac.entrySet()){
+								if(!set.getKey().equals("127.0.0.1") && !set.getKey().equals(rs.getString("host_ip")))
+										aux.setMac(set.getValue());
+							}
+						}
+						ssh.disconnect();
+					}
+					for(Entry<String, Host> host : hosts.entrySet()){
+						  System.out.println("Host name=" + host.getKey() + ", Host_info " + host.getValue().toString());
+					}
+					
+					Topology topology = new Topology();
+					OdlApiClient odlApi = new OdlApiClient();
+					odlApi.getResources(topology,hosts);
+					
+					dbnova.stopDB();*/
 				}
 				else{
 					resRequest(ErrorCheck.BAD_CONTENT_TYPE,e,"POST","");
@@ -56,9 +133,21 @@ public class HorizonApiHandler implements HttpHandler{
 			try {
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
-					ErrorCheck ec = db.showDB(new VDC(), "vdc", tenant, "delete");
-					db.deleteVDC(tenant);
-					resRequest(ec,e,"DELETE","");
+					if(db.existVDC(tenant)){
+						/*String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
+						System.out.println(token);
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, tenant, token, "DELETE");
+						if(res == ErrorCheck.ALL_OK){
+							//TODO Eliminar stack de bd y local*/
+							ErrorCheck ec = db.deleteVDC(vdc.getTenant());
+							resRequest(ec,e,"DELETE","");
+						/*}
+						//ErrorCheck ec = db.showDB(new VDC(), "vdc", tenant, "delete");
+						*/
+					}
+					else{
+						resRequest(ErrorCheck.TENANTID_NOT_FOUND,e,"DELETE","");
+					}
 				}
 				else
 					resRequest(ErrorCheck.TENANTID_REQUIRED,e,"DELETE","");
@@ -82,7 +171,7 @@ public class HorizonApiHandler implements HttpHandler{
 				String tenant = checkQuery(query);
 				if(!tenant.isEmpty()){
 					ErrorCheck ec;
-					if(db.checkVDC(tenant)){
+					if(db.checkLocalVDC(tenant)){
 						vdc = db.getLocalVDC(tenant);
 						ec = ErrorCheck.ALL_OK; 
 					}
@@ -205,5 +294,33 @@ public class HorizonApiHandler implements HttpHandler{
 		os.write(response.getBytes());
 		
 		os.close();
+	}
+	
+	private static Map<String,String> checkMac(String[] output, Host host){
+		Map<String,String> setMac = new HashMap<String,String>();
+		String mac = "";
+		String ip = "";
+		String[] res;
+		for (int i = 0; i < output.length; ++i){
+			if(output[i].contains("HW")){
+				res = output[i].split(" ");
+				for(int j = 0; j < res.length; ++j){
+					if(res[j].contains("HW")){
+						mac = res[j+1];
+					}
+				}
+			}
+			else if(output[i].contains("inet") && !output[i].contains("inet6")){
+				res = output[i].split(" ");
+				for(int j = 0; j < res.length; ++j){
+					if(res[j].contains("inet")){
+						ip = res[11].split(":")[1];
+						setMac.put(ip, mac);
+						mac = ip = "";
+					}
+				}
+			}
+		}
+		return setMac;
 	}
 }

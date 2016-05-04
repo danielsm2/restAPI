@@ -9,10 +9,9 @@ import java.sql.Statement;
 
 import conf.Conf;
 
-public class NovaDB {
+public class NovaDB extends DataBase{
 	
-	private static final String DB_URL = "jdbc:mysql://172.26.37.249:3306/nova";
-	//private static final String DB_URL = "jdbc:mysql://localhost:3306/nova";
+	private static final String DB_URL = "jdbc:mysql://" + Conf.IP_Nova +":3306/nova";
 	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
 	
 	Connection c;
@@ -21,54 +20,11 @@ public class NovaDB {
 	
 	private static NovaDB instance;
 	
-	/**
-	 * Singleton de la clase DataBase 
-	 * @return
-	 */
 	public static NovaDB getInstance(){
 		if(instance == null)
 			return instance = new NovaDB();
 		else
 			return instance;
-	}
-	
-	/**
-	 * La base de datos pasa a estar en estado running
-	 */
-	public void  startDB(){
-		loadDriver();
-		createConnection();
-		//createDB();
-		try {
-			stmt = c.createStatement();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * La base de datos pasa a estar parada
-	 */
-	public void stopDB(){
-		try{
-			c.close();
-		}catch(SQLException e){
-			System.err.println(e);
-		}
-	}
-	
-	/**
-	 * Cargar el driver de mysl
-	 */
-	private void loadDriver(){
-		try{
-			Class.forName(JDBC_PATH);
-		}catch(ClassNotFoundException e){
-			System.err.println("Unable to load database driver");
-			System.err.println(e);
-			System.exit(0);
-		}
 	}
 	
 	/**

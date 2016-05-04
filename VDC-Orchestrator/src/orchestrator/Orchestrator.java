@@ -47,10 +47,6 @@ public class Orchestrator {
 			horizonapi.start();
 
 			System.out.println("Server is listening...");
-			
-
-			HeatApiClient heatapi = new HeatApiClient();
-			heatapi.deployVDC("http://" + Conf.IP_Heat, id, token);
 
 			/*InputStream is = null;
 			try{
@@ -75,88 +71,10 @@ public class Orchestrator {
 				parse.readTopology(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)), topology, h);
 			}catch(Exception e){
 				e.printStackTrace();
-			}*/
-			/*JsonParser parser = new JsonParser();
-			
-			KeystoneApiClient keystoneapi = new KeystoneApiClient();
-			String token = keystoneapi.getToken("http://" + Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
-			//String token = keystoneapi.getToken("http://localhost:5000", "admin", "admin", "default");
-			System.out.println(token);
-
-			List<Tenant> tenants = keystoneapi.getTenant("http://" + Conf.IP_Keystone, token);
-			String id = "";
-			for(Tenant aux : tenants){
-				if(aux.getName().equals("admin"))
-					id = aux.getId();
-			}*/
-			//NovaApiClient novaapi = new NovaApiClient();
-			
-			/*ArrayList<Flavor> flavors = novaapi.getFlavors(Conf.IP_Nova, token, parser, id);
-			
-			System.out.println(flavors.toString());*/
-			
-			//Map<String,Host> hosts = novaapi.getHosts("http://" + Conf.IP_Nova, token, parser, id);
-			//Map<String,Host> hosts = novaapi.getHosts("http://localhost:8774", token, parser, id);
-			
-			/*NovaDB db = NovaDB.getInstance();
-			db.startDB();
-			ResultSet rs = db.queryDB();
-			Host aux;
-			SSHclient ssh = new SSHclient();
-			
-			while(rs.next()){
-				if(hosts.containsKey(rs.getString("host"))){
-					aux = hosts.get(rs.getString("host"));
-					ssh.connect(Conf.User_Compute,rs.getString("host_ip"),22,Conf.Pass_Compute);					
-					String[] output = ssh.ExecuteIfconfig();
-					Map<String,String> mac = checkMac(output, aux);
-					for(Entry<String, String> set : mac.entrySet()){
-						if(!set.getKey().equals("127.0.0.1") && !set.getKey().equals(rs.getString("host_ip")))
-								aux.setMac(set.getValue());
-					}
-				}
-				ssh.disconnect();
-			}
-			for(Entry<String, Host> host : hosts.entrySet()){
-				  System.out.println("Host name=" + host.getKey() + ", Host_info " + host.getValue().toString());
-			}
-			
-			Topology topology = new Topology();
-			OdlApiClient odlApi = new OdlApiClient();
-			odlApi.getResources(topology,hosts);
-			
-			db.stopDB();*/
-			
+			}*/			
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private static Map<String,String> checkMac(String[] output, Host host){
-		Map<String,String> setMac = new HashMap<String,String>();
-		String mac = "";
-		String ip = "";
-		String[] res;
-		for (int i = 0; i < output.length; ++i){
-			if(output[i].contains("HW")){
-				res = output[i].split(" ");
-				for(int j = 0; j < res.length; ++j){
-					if(res[j].contains("HW")){
-						mac = res[j+1];
-					}
-				}
-			}
-			else if(output[i].contains("inet") && !output[i].contains("inet6")){
-				res = output[i].split(" ");
-				for(int j = 0; j < res.length; ++j){
-					if(res[j].contains("inet")){
-						ip = res[11].split(":")[1];
-						setMac.put(ip, mac);
-						mac = ip = "";
-					}
-				}
-			}
-		}
-		return setMac;
 	}
 }

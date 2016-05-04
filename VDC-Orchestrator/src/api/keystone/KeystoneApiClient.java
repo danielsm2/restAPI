@@ -18,8 +18,13 @@ import utils.JsonParser;
 
 public class KeystoneApiClient {
 	
-	public KeystoneApiClient() {
-		
+	private static KeystoneApiClient instance;
+	
+	public static KeystoneApiClient getInstance(){
+		if(instance == null)
+			return instance = new KeystoneApiClient();
+		else
+			return instance;
 	}
 	
 	public String getToken(String keystoneurl, String usr, String passw, String domainID) {
@@ -27,7 +32,7 @@ public class KeystoneApiClient {
 		HttpURLConnection connection = null;
 		
 		try {
-			URL url = new URL(keystoneurl+"/v3/auth/tokens");
+			URL url = new URL("http://" + keystoneurl +":5000/v3/auth/tokens");
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type", "application/json");
@@ -78,7 +83,7 @@ public class KeystoneApiClient {
 		HttpURLConnection connection = null;
 		
 		try{
-			URL url = new URL(keystoneurl+"/v2.0/tenants");
+			URL url = new URL("http://" + keystoneurl +":5000/v2.0/tenants");
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("X-Auth-Token", token);
