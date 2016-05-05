@@ -102,12 +102,15 @@ public class HeatApiClient {
 						
 			int code = http.getResponseCode();
 			if(code == HttpURLConnection.HTTP_CREATED){
-				System.out.println("Deployed");
+				System.out.println("Deployed topology");
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
 				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
 				saveStack(sql);
 				return ErrorCheck.ALL_OK;
+			}
+			else if(code == HttpURLConnection.HTTP_ACCEPTED){
+				System.out.println("Updated topology");
 			}
 			else if(code == HttpURLConnection.HTTP_NO_CONTENT){
 				System.out.println("Deleted from OpenStack");
