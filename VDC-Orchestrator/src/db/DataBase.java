@@ -73,11 +73,11 @@ public class DataBase {
 	 * Stops the database
 	 */
 	public void stopDB(){
-		/*try{
+		try{
 			c.close();
 		}catch(SQLException e){
 			System.err.println(e);
-		}*/
+		}
 	}
 	
 	/**
