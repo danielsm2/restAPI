@@ -6,11 +6,6 @@ import java.net.InetSocketAddress;
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.HttpServer;
 
-import api.heat.HeatApiClient;
-import api.keystone.KeystoneApiClient;
-import api.nova.NovaApiClient;
-import api.odl.OdlApiClient;
-
 /** The HorizonApiServer class implements a REST API for the communication between the VDC dashboard in Horizon and the algorithms module. For this, it
  * implements an HTTP server that accepts CRUD requests (POST, READ and DELETE operations) form the dashborad to allow the creation of new VDC instances, consulting
  * the details of already established VDCs, modify/update previously deployed VDCs and eliminate an established VDC. The client of the API at the Horizon side has to

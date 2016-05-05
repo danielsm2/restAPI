@@ -12,7 +12,6 @@ import conf.Conf;
 public class NovaDB extends DataBase{
 	
 	private static final String DB_URL = "jdbc:mysql://" + Conf.IP_Nova +":3306/nova";
-	private static final String JDBC_PATH = "com.mysql.jdbc.Driver";
 	
 	Connection c;
 	Statement stmt;
