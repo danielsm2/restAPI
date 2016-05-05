@@ -406,18 +406,39 @@ public class JsonParser {
 		try {
 			reader = new JsonReader(new InputStreamReader(in,"UTF-8"));
 			reader.beginObject();
-			while(reader.hasNext()){
+			reader.nextName();
+			reader.beginObject();
+			String aux = reader.nextName();
+			if(aux.equals("id")){
+				id = reader.nextString();
+			}
+			reader.nextName();
+			reader.beginArray();
+			reader.beginObject();
+			aux = reader.nextName();
+			if(aux.equals("href")){
+				url = reader.nextString();
+			}
+			reader.skipValue();
+			reader.endObject();
+			reader.endArray();
+			reader.endObject();
+			reader.endObject();
+
+			/*while(reader.hasNext()){
+
 				String aux = reader.nextName();
 				if(aux.equals("id")){
 					id = reader.nextString();
 				}
 				else if(aux.equals("links")){
 					reader.beginObject();
-					if(reader.nextString().equals("href")){
-						url = reader.nextName();
+					if(reader.nextName().equals("href")){
+						url = reader.nextString();
+						reader.close();
 					}
 				}
-			}
+			}*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
