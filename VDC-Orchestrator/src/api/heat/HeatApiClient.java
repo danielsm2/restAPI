@@ -106,7 +106,7 @@ public class HeatApiClient {
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
 				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
-				saveStack(sql);
+				//saveStack(sql);
 				return ErrorCheck.ALL_OK;
 			}
 			else if(code == HttpURLConnection.HTTP_ACCEPTED){
