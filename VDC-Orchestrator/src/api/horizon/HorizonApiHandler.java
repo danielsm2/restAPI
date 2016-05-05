@@ -41,7 +41,6 @@ public class HorizonApiHandler implements HttpHandler{
 	NovaDB dbnova = NovaDB.getInstance();
 	private JsonParser parser = new JsonParser();
 
-	
 	HeatApiClient hac = HeatApiClient.getInstance();
 	KeystoneApiClient kac = KeystoneApiClient.getInstance();
 	NovaApiClient nac = NovaApiClient.getInstance();
@@ -62,19 +61,15 @@ public class HorizonApiHandler implements HttpHandler{
 			try{
 				if(content != null && content.get(0).equals("application/json")){
 					vdc = parser.fromJson(message);
-					//String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
-					//System.out.println(token);
+					String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
+					System.out.println(token);
 					if(db.existVDC(vdc.getTenant())){
-						//ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT");
-						//if(res == ErrorCheck.ALL_OK){
-							//TODO Eliminar stack de bd y local
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT");
+						if(res == ErrorCheck.ALL_OK)
 							db.deleteVDC(vdc.getTenant());
-					//	}
-						//else{
-							//resRequest(res, e, "POST", "");
-						//}
+						else
+							resRequest(res, e, "POST", "");
 					}
-					//db.showDB(new VDC(), "vdc", vdc.getTenant(), "delete");
 					ErrorCheck ec = dm.startParse(vdc);
 					resRequest(ec,e,"POST","");
 					

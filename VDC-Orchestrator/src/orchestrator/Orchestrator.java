@@ -48,6 +48,7 @@ public class Orchestrator {
 
 			System.out.println("Server is listening...");
 
+			//check salida topologia ODL
 			/*InputStream is = null;
 			try{
 				System.out.println("Waiting for data");

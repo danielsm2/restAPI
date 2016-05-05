@@ -78,6 +78,7 @@ public class HeatApiClient {
 				URL url = new URL(db.getStack(tenantID));
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("DELETE");
+				http.connect();
 			}
 			else{
 				if(type == "POST"){
@@ -101,12 +102,15 @@ public class HeatApiClient {
 						
 			int code = http.getResponseCode();
 			if(code == HttpURLConnection.HTTP_CREATED){
-				System.out.println("Ok");
+				System.out.println("Deployed");
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
 				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
-				//saveStack(sql);
+				saveStack(sql);
 				return ErrorCheck.ALL_OK;
+			}
+			else if(code == HttpURLConnection.HTTP_NO_CONTENT){
+				System.out.println("Deleted from OpenStack");
 			}
 			else{
 				//TODO devolver el codigo correcto segun 'code'
