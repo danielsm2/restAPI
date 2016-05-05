@@ -66,15 +66,11 @@ public class HorizonApiHandler implements HttpHandler{
 					if(db.existVDC(vdc.getTenant())){
 						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT");
 						if(res == ErrorCheck.ALL_OK)
-							resRequest(db.deleteVDC(vdc.getTenant()), e, "DELETE", "");
+							resRequest(db.deleteVDC(vdc.getTenant()), e, "POST", "");
 						else
 							resRequest(res, e, "POST", "");
 					}
 					else{
-						ErrorCheck ec = dm.startParse(vdc);
-						if(!ec.equals(ErrorCheck.ALL_OK))
-							resRequest(ec,e,"POST","");
-						
 						/*List<Tenant> tenants = kac.getTenant(Conf.IP_Keystone, token);
 						String id = "";
 						for(Tenant aux : tenants){
@@ -117,7 +113,12 @@ public class HorizonApiHandler implements HttpHandler{
 						dbnova.stopDB();*/
 						
 						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "POST");
-						resRequest(res, e, "POST", "");
+						if(res.equals(ErrorCheck.ALL_OK)){
+							ErrorCheck ec = dm.startParse(vdc);
+							resRequest(ec,e,"POST","");
+						}
+						else
+							resRequest(res, e, "POST", "");
 					}
 				}
 				else{
