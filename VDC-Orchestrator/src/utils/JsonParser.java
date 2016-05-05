@@ -411,6 +411,7 @@ public class JsonParser {
 			String aux = reader.nextName();
 			if(aux.equals("id")){
 				id = reader.nextString();
+				System.out.println("id: " + id);
 			}
 			reader.nextName();
 			reader.beginArray();
@@ -418,6 +419,7 @@ public class JsonParser {
 			aux = reader.nextName();
 			if(aux.equals("href")){
 				url = reader.nextString();
+				System.out.println("url: " + url);
 			}
 			reader.skipValue();
 			reader.endObject();
