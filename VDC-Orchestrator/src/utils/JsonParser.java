@@ -424,7 +424,12 @@ public class JsonParser {
 			reader.endArray();
 			reader.endObject();
 			reader.endObject();
-
+			reader.close();
+			
+			List<String> stack = new ArrayList<String>(2);
+			stack.add(id);
+			stack.add(url);
+			return stack;
 			/*while(reader.hasNext()){
 
 				String aux = reader.nextName();
@@ -442,9 +447,5 @@ public class JsonParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		List<String> stack = new ArrayList<String>(2);
-		stack.add(id);
-		stack.add(url);
-		return stack;
 	}
 }
