@@ -432,22 +432,10 @@ public class JsonParser {
 			stack.add(id);
 			stack.add(url);
 			return stack;
-			/*while(reader.hasNext()){
-
-				String aux = reader.nextName();
-				if(aux.equals("id")){
-					id = reader.nextString();
-				}
-				else if(aux.equals("links")){
-					reader.beginObject();
-					if(reader.nextName().equals("href")){
-						url = reader.nextString();
-						reader.close();
-					}
-				}
-			}*/
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 }

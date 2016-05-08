@@ -1,45 +1,44 @@
 CREATE DATABASE `algorithms` /*!40100 DEFAULT CHARACTER SET latin1 */;
 CREATE TABLE `algorithms`.`vdc` (
-  `tenantID` varchar(255) NOT NULL,
-  PRIMARY KEY (`tenantID`)
+  `tenantID` varchar(255) NOT NULL,
+  PRIMARY KEY (`tenantID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `algorithms`.`vnode` (
-  `id` varchar(256) NOT NULL,
-  `label` varchar(256) DEFAULT NULL,
-  `fk_vdc` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_vm_idx` (`label`),
-  KEY `id_idx` (`fk_vdc`),
-  CONSTRAINT `fk_vdc` FOREIGN KEY (`fk_vdc`) REFERENCES `algorithms`.`vdc` (`tenantID`) ON DELETE CASCADE ON UPDATE NO ACTION
+  `id` varchar(256) NOT NULL,
+  `label` varchar(256) DEFAULT NULL,
+  `fk_vdc` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_vm_idx` (`label`),
+  KEY `id_idx` (`fk_vdc`),
+  CONSTRAINT `fk_vdc` FOREIGN KEY (`fk_vdc`) REFERENCES `algorithms`.`vdc` (`tenantID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `algorithms`.`vm` (
-  `id` varchar(255) NOT NULL,
-  `label` varchar(255) DEFAULT NULL,
-  `flavorID` varchar(255) DEFAULT NULL,
-  `flavorName` varchar(255) DEFAULT NULL,
-  `imageID` varchar(255) DEFAULT NULL,
-  `fk_vnode` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_vnode_idx` (`fk_vnode`),
-  CONSTRAINT `fk_vnode` FOREIGN KEY (`fk_vnode`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  `id` varchar(255) NOT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  `flavorID` varchar(255) DEFAULT NULL,
+  `flavorName` varchar(255) DEFAULT NULL,
+  `imageID` varchar(255) DEFAULT NULL,
+  `fk_vnode` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_vnode_idx` (`fk_vnode`),
+  CONSTRAINT `fk_vnode` FOREIGN KEY (`fk_vnode`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `algorithms`.`vlink` (
-  `id` varchar(255) NOT NULL,
-  `bandwith` varchar(255) DEFAULT NULL,
-  `fk_to` varchar(255) DEFAULT NULL,
-  `fk_from` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_to_idx` (`fk_to`),
-  KEY `fk_from_idx` (`fk_from`),
-  CONSTRAINT `fk_from` FOREIGN KEY (`fk_from`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_to` FOREIGN KEY (`fk_to`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  `id` varchar(255) NOT NULL,
+  `bandwith` varchar(255) DEFAULT NULL,
+  `fk_to` varchar(255) DEFAULT NULL,
+  `fk_from` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_to_idx` (`fk_to`),
+  KEY `fk_from_idx` (`fk_from`),
+  CONSTRAINT `fk_from` FOREIGN KEY (`fk_from`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_to` FOREIGN KEY (`fk_to`) REFERENCES `algorithms`.`vnode` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 CREATE TABLE `algorithms`.`stacks` (
-  `id` varchar(255) NOT NULL,
-  `url` varchar(255) DEFAULT NULL,
-  `fk_vdc` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_tenant_idx` (`fk_vdc`),
-  CONSTRAINT `fk_tenant` FOREIGN KEY (`fk_vdc`) REFERENCES `algorithms`.`vdc` (`tenantID`) ON DELETE CASCADE ON UPDATE NO ACTION
+  `id` varchar(255) NOT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `fk_vdc` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_tenant_idx` (`fk_vdc`),
+  CONSTRAINT `fk_tenant` FOREIGN KEY (`fk_vdc`) REFERENCES `algorithms`.`vdc` (`tenantID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

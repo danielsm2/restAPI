@@ -64,7 +64,7 @@ public class HorizonApiHandler implements HttpHandler{
 					String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
 					System.out.println(token);
 					if(db.existVDC(vdc.getTenant())){
-						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT");
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT", vdc);
 						if(res == ErrorCheck.ALL_OK)
 							resRequest(db.deleteVDC(vdc.getTenant()), e, "POST", "");
 						else
@@ -112,9 +112,10 @@ public class HorizonApiHandler implements HttpHandler{
 						
 						dbnova.stopDB();*/
 						
-						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "POST");
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "POST", vdc);
 						if(res.equals(ErrorCheck.ALL_OK)){
 							ErrorCheck ec = dm.startParse(vdc);
+							hac.saveStack();
 							resRequest(ec,e,"POST","");
 						}
 						else
@@ -138,7 +139,7 @@ public class HorizonApiHandler implements HttpHandler{
 					if(db.existVDC(tenant)){
 						String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
 						System.out.println(token);
-						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, tenant, token, "DELETE");
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, tenant, token, "DELETE", vdc);
 						if(res == ErrorCheck.ALL_OK)
 							resRequest(db.deleteVDC(vdc.getTenant()), e, "DELETE", "");
 					}

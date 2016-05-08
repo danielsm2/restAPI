@@ -28,6 +28,7 @@ public class HeatApiClient {
 	Gson gson = new Gson();
 	DataBase db = DataBase.getInstance();
 	HttpURLConnection http = null;
+	private String sqlStatement;
 
 	private static HeatApiClient instance;
 	
@@ -38,8 +39,8 @@ public class HeatApiClient {
 			return instance;
 	}
 	
-	private String buildJson(String tenantID){
-		VDC vdc = db.getLocalVDC(tenantID);
+	private String buildJson(VDC vdc){
+		//VDC vdc = db.getLocalVDC(tenantID);
 		List<JsonElement> je = new ArrayList<JsonElement>();
 		JsonObject resources= new JsonObject();
 
@@ -72,7 +73,7 @@ public class HeatApiClient {
 		dos.writeBytes(json);
 		dos.close();
 	}
-	public ErrorCheck deployTopology(String heatURL, String tenantID, String token, String type){		
+	public ErrorCheck deployTopology(String heatURL, String tenantID, String token, String type, VDC vdc){		
 		try{
 			if(type == "DELETE"){
 				URL url = new URL(db.getStack(tenantID));
@@ -94,7 +95,7 @@ public class HeatApiClient {
 				http.setRequestProperty("Content-Type", "application/json");
 				http.setRequestProperty("X-Auth-Token", token);
 				
-				String json = buildJson(tenantID);
+				String json = buildJson(vdc);
 				System.out.println(json);
 				
 				writeOutputStream(http, json);
@@ -105,8 +106,8 @@ public class HeatApiClient {
 				System.out.println("Deployed topology");
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
-				String sql = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
-				//saveStack(sql);
+				sqlStatement = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
+				//saveStack();
 				return ErrorCheck.ALL_OK;
 			}
 			else if(code == HttpURLConnection.HTTP_ACCEPTED){
@@ -145,7 +146,7 @@ public class HeatApiClient {
 		return gson.toJsonTree(e3);
 	}
 	
-	private void saveStack(String sql){
-		db.newEntryDB(sql);
+	public void saveStack(){
+		db.newEntryDB(sqlStatement);
 	}
 }

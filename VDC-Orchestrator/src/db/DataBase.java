@@ -2,6 +2,7 @@ package db;
 
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import conf.Conf;
@@ -60,8 +61,8 @@ public class DataBase {
 	 */
 	public void  startDB(){
 		loadDriver();
+		createDB();
 		createConnection();
-		//createDB();
 		try {
 			stmt = c.createStatement();
 		} catch (SQLException e) {
@@ -76,7 +77,7 @@ public class DataBase {
 		try{
 			c.close();
 		}catch(SQLException e){
-			System.err.println(e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -110,16 +111,24 @@ public class DataBase {
 	 * Creates a database if it does not exist
 	 */
 	private void createDB(){ //TODO
-		/*System.out.println("Creating new DB...");
 		try{
-			//stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS PEOPLE");
-			//startTable();
-			System.out.println("DB created succesfully");
+			c = DriverManager.getConnection("jdbc:mysql://localhost:3306/" ,Conf.User_BD_Horizon,Conf.Pass_BD_Horizon);
+			Statement aux = c.createStatement();
+			ResultSet rs = aux.executeQuery("SHOW DATABASES LIKE 'algorithms'");
+			if(!rs.next()){
+				System.out.println("Creating new DB tables...");
+				Conf conf = new Conf();
+				List<String> createTables = conf.readDBFile();
+				for(String table : createTables)
+					aux.executeUpdate(table);
+				System.out.println("DB created succesfully");
+			}
+			
 		}catch(Exception e){
 			System.err.println("Can not create a statement");
 			System.err.println(e);
 			System.exit(1);
-		}*/
+		}
 	}
 	
 	public boolean existVDC(String tenantID) throws SQLException{
@@ -134,13 +143,12 @@ public class DataBase {
 	public ErrorCheck deleteVDC(String tenantID) throws SQLException{
 		PreparedStatement aux = prepareStatement(deleteVDC);
 		aux.setString(1, tenantID);
-		if(aux.executeUpdate() == 1){
+		if(aux.executeUpdate() != 0){
 			deleteLocalVDC(tenantID);
 			return ErrorCheck.ALL_OK;
 		}
 		else
-			//TODO create proper error check for this case
-			return ErrorCheck.BAD_CONTENT_TYPE;
+			return ErrorCheck.NOTHING_TO_DELETE;
 	}
 	
 	/**
