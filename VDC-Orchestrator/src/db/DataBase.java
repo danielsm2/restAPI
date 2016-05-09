@@ -28,7 +28,7 @@ public class DataBase {
 	private String queryVNODE = "SELECT * FROM vnode WHERE fk_vdc=?";
 	private String queryVLINK = "SELECT * FROM vlink WHERE fk_to=? OR fk_from=?";
 	private String queryVM = "SELECT * FROM vm WHERE fk_vnode=?";
-	private String queryStack = "SELECT url FROM Stacks WHERE tenantID=?";
+	private String queryStack = "SELECT url FROM stacks WHERE fk_vdc=?";
 	
 	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
 	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
@@ -339,6 +339,9 @@ public class DataBase {
 		ps = prepareStatement(queryStack);
 		ps.setString(1, tenantID);
 		ResultSet rs = ps.executeQuery();
-		return rs.getString("url");
+		if(rs.next()){
+			return rs.getString("url");
+		}
+		return null;
 	}
 }

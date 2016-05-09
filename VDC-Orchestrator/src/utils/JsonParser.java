@@ -421,6 +421,7 @@ public class JsonParser {
 				url = reader.nextString();
 				System.out.println("url: " + url);
 			}
+			reader.nextName();
 			reader.skipValue();
 			reader.endObject();
 			reader.endArray();

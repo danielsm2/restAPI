@@ -53,7 +53,7 @@ public class HeatApiClient {
 			VirtualNode vn = vdc.getVNodeByPos(i);
 			for(int j = 0; j < vn.getSizeVirtualMachine(); ++j){
 				VirtualMachine vm = vn.getVirtualMachine(j);
-				je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova","OS::Nova::Server"));
+				je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova:ubuntu-devstack","OS::Nova::Server"));
 				resources.add("host" + i +j, je.get(je.size()-1));
 			}
 		}
@@ -79,6 +79,7 @@ public class HeatApiClient {
 				URL url = new URL(db.getStack(tenantID));
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("DELETE");
+				http.setRequestProperty("X-Auth-Token", token);
 				http.connect();
 			}
 			else{
@@ -106,15 +107,17 @@ public class HeatApiClient {
 				System.out.println("Deployed topology");
 				JsonParser jp = new JsonParser();
 				List<String> stackInfo = jp.getStackID(http.getInputStream());
-				sqlStatement = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + db.getCurrentTenant() + "')";
+				sqlStatement = "INSERT INTO stacks values ('" + stackInfo.get(0) + "','" + stackInfo.get(1) + "','" + vdc.getTenant() + "')";
 				//saveStack();
 				return ErrorCheck.ALL_OK;
 			}
 			else if(code == HttpURLConnection.HTTP_ACCEPTED){
 				System.out.println("Updated topology");
+				return ErrorCheck.ALL_OK;
 			}
 			else if(code == HttpURLConnection.HTTP_NO_CONTENT){
 				System.out.println("Deleted from OpenStack");
+				return ErrorCheck.ALL_OK;
 			}
 			else{
 				//TODO devolver el codigo correcto segun 'code'
