@@ -65,8 +65,11 @@ public class HorizonApiHandler implements HttpHandler{
 					System.out.println(token);
 					if(db.existVDC(vdc.getTenant())){
 						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT", vdc);
-						if(res == ErrorCheck.ALL_OK)
-							resRequest(db.deleteVDC(vdc.getTenant()), e, "POST", "");
+						if(res == ErrorCheck.ALL_OK){
+							ErrorCheck er = db.deleteVDC(vdc.getTenant());
+							if(er == ErrorCheck.ALL_OK)
+								resRequest(dm.startParse(vdc), e, "POST", "");
+						}
 						else
 							resRequest(res, e, "POST", "");
 					}
