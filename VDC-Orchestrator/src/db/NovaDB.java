@@ -29,6 +29,7 @@ public class NovaDB extends DataBase{
 	/**
 	 * Crear una conexión con la base de datos
 	 */
+	@SuppressWarnings("unused")
 	private void createConnection(){
 		try{
 			c = DriverManager.getConnection(DB_URL,Conf.User_BD_Nova,Conf.Pass_BD_Nova);

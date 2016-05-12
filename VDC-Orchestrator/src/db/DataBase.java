@@ -31,9 +31,9 @@ public class DataBase {
 	private String queryStack = "SELECT url FROM stacks WHERE fk_vdc=?";
 	
 	private String deleteVDC = "DELETE FROM vdc WHERE tenantID=?";
-	private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
-	private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=? OR fk_from=?";
-	private String deleteVM = "DELETE FROM vm WHERE fk_vnode=?";
+	//private String deleteVNODE = "DELETE FROM vnode WHERE id=?";
+	//private String deleteVLINK = "DELETE FROM vlink WHERE fk_to=? OR fk_from=?";
+	//private String deleteVM = "DELETE FROM vm WHERE fk_vnode=?";
 
 	private Map<String,VDC> setVDC = new HashMap<String,VDC>();
 
