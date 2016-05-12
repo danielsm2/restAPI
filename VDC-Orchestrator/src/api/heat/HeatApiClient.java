@@ -43,7 +43,6 @@ public class HeatApiClient {
 		//VDC vdc = db.getLocalVDC(tenantID);
 		List<JsonElement> je = new ArrayList<JsonElement>();
 		JsonObject resources= new JsonObject();
-		Port port;
 		je.add(createNetwork("test_network_1","OS::Neutron::Net"));
 		je.add(createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet"));
 		resources.add("test_network_1", je.get(0));
@@ -52,10 +51,10 @@ public class HeatApiClient {
 		for(int i = 0; i < vdc.getSizeVNode(); ++i){
 			VirtualNode vn = vdc.getVNodeByPos(i);
 			for(int j = 0; j < vn.getSizeVirtualMachine(); ++j){
-				port = new Port("test_network_1", "port" + i + j, "test_subnet_1");
+				Port port = new Port(new Network_id("test_network_1"), "port" + i + j, new Network_id("test_subnet_1"));
 				VirtualMachine vm = vn.getVirtualMachine(j);
 				je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova:ubuntu-devstack","OS::Nova::Server", port.getName()));
-				resources.add("port", gson.toJsonTree(port));
+				resources.add("port"+i+j, gson.toJsonTree(port));
 				resources.add("host" + i +j, je.get(je.size()-1));
 			}
 		}
@@ -140,7 +139,7 @@ public class HeatApiClient {
 	
 	private JsonElement createSubnet(String network, String name, String ip, String type){
 		Network_id ni1 = new Network_id(network);
-		Properties p2 = new Properties(ni1,name,ip, null, true);
+		Properties p2 = new Properties(ni1,name,ip, "null", true);
 		Element e2 = new Element(type, p2);
 		return gson.toJsonTree(e2);
 	}
