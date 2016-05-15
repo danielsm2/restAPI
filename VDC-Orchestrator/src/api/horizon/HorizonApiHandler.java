@@ -61,11 +61,10 @@ public class HorizonApiHandler implements HttpHandler{
 			try{
 				if(content != null && content.get(0).equals("application/json")){
 					vdc = parser.fromJson(message);
-					/*String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
-					System.out.println(token);*/
-					String token = "";
+					String token = kac.getToken(Conf.IP_Keystone, Conf.User_Keystone,Conf. Pass_Keystone, "default");
+					System.out.println(token);
 					if(db.existVDC(vdc.getTenant())){
-						/*ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT", vdc);
+						ErrorCheck res = hac.deployTopology(Conf.IP_Heat, vdc.getTenant(), token, "PUT", vdc);
 						if(res == ErrorCheck.ALL_OK){
 							ErrorCheck er = db.deleteVDC(vdc.getTenant());
 							if(er == ErrorCheck.ALL_OK){
@@ -75,7 +74,7 @@ public class HorizonApiHandler implements HttpHandler{
 							}
 						}
 						else
-							resRequest(res, e, "POST", "");*/
+							resRequest(res, e, "POST", "");
 					}
 					else{
 						/*List<Tenant> tenants = kac.getTenant(Conf.IP_Keystone, token);

@@ -71,7 +71,7 @@ public class HeatApiClient {
 	}
 	public ErrorCheck deployTopology(String heatURL, String tenantID, String token, String type, VDC vdc){		
 		try{
-			/*if(type == "DELETE"){
+			if(type == "DELETE"){
 				URL url = new URL(db.getStack(tenantID));
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("DELETE");
@@ -90,15 +90,15 @@ public class HeatApiClient {
 					http.setRequestMethod("PUT");
 				}
 				http.setRequestProperty("Content-Type", "application/json");
-				http.setRequestProperty("X-Auth-Token", token);*/
+				http.setRequestProperty("X-Auth-Token", token);
 				
 				String json = buildJson(vdc);
 				System.out.println(json);
 				
 				writeOutputStream(http, json);
-			//}
+			}
 						
-			/*int code = http.getResponseCode();
+			int code = http.getResponseCode();
 			if(code == HttpURLConnection.HTTP_CREATED){
 				System.out.println("Deployed topology");
 				JsonParser jp = new JsonParser();
@@ -119,7 +119,7 @@ public class HeatApiClient {
 				//TODO devolver el codigo correcto segun 'code'
 				System.err.println(code + " " + http.getResponseMessage());
 				return ErrorCheck.BAD_CONTENT_TYPE;
-			}*/
+			}
 		} catch(Exception e){
 			e.printStackTrace();
 		}
