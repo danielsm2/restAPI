@@ -21,6 +21,7 @@ public class Conf {
 	public static String Pass_Keystone;
 	public static String IP_Nova;
 	public static String IP_ODL;
+	public static String IP_Network;
 	public static String User_ODL;
 	public static String Pass_ODL;
 	public static String IP_Heat;
@@ -43,6 +44,7 @@ public class Conf {
 		writer.println("Pass_Keystone=cosign");
 		writer.println("IP_Nova=172.26.37.249");
 		writer.println("IP_ODL=172.26.37.89");
+		writer.println("IP_Network=");
 		writer.println("User_ODL=admin");
 		writer.println("Pass_ODL=admin");
 		writer.println("IP_Heat=172.26.37.249");
@@ -61,6 +63,7 @@ public class Conf {
 		writer.println("Pass_Keystone=");
 		writer.println("IP_Nova=");
 		writer.println("IP_ODL=");
+		writer.println("IP_Network=");
 		writer.println("User_ODL=");
 		writer.println("Pass_ODL=");
 		writer.println("User_BD_Horizon=");
@@ -101,6 +104,8 @@ public class Conf {
 				IP_Nova = line.split("=")[1];
 			else if(line.contains("IP_ODL"))
 				IP_ODL = line.split("=")[1];
+			else if(line.contains("IP_Network"))
+				IP_Network = line.split("=")[1];
 			else if(line.contains("User_ODL"))
 				User_ODL = line.split("=")[1];
 			else if(line.contains("Pass_ODL"))

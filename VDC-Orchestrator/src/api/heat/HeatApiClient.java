@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import api.network.NetworkApiHandler;
 import db.DataBase;
 import utils.JsonParser;
 import vdc.ErrorCheck;
@@ -25,6 +26,8 @@ public class HeatApiClient {
 	HttpURLConnection http = null;
 	private String sqlStatement;
 
+	private NetworkApiHandler nar = NetworkApiHandler.getInstance();
+
 	private static HeatApiClient instance;
 	
 	public static HeatApiClient getInstance(){
@@ -38,7 +41,7 @@ public class HeatApiClient {
 		List<JsonElement> je = new ArrayList<JsonElement>();
 		JsonObject resources= new JsonObject();
 		je.add(createNetwork("test_network_1","OS::Neutron::Net"));
-		je.add(createSubnet("test_network_1","test_subnet_1","10.11.12.0/24", "OS::Neutron::Subnet"));
+		je.add(createSubnet("test_network_1","test_subnet_1",nar.getFirstFreeIP(), "OS::Neutron::Subnet"));
 		resources.add("test_network_1", je.get(0));
 		resources.add("test_subnet_1", je.get(1));
 		

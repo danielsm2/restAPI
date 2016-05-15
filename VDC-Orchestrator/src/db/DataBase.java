@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import api.network.NetworkApiHandler;
 import conf.Conf;
 import vdc.ErrorCheck;
 import vdc.VDC;
@@ -63,6 +64,7 @@ public class DataBase {
 		loadDriver();
 		createDB();
 		createConnection();
+		getListIP();
 		try {
 			stmt = c.createStatement();
 		} catch (SQLException e) {
@@ -343,5 +345,10 @@ public class DataBase {
 			return rs.getString("url");
 		}
 		return null;
+	}
+	
+	public void getListIP(){
+		NetworkApiHandler nah = NetworkApiHandler.getInstance();
+		nah.updateSubnets(Conf.IP_Network);
 	}
 }

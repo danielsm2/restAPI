@@ -18,6 +18,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import api.heat.HeatApiClient;
 import api.keystone.KeystoneApiClient;
+import api.network.NetworkApiHandler;
 import api.nova.Flavor;
 import api.nova.Host;
 import api.nova.NovaApiClient;

@@ -57,7 +57,6 @@ public class HorizonApiServer {
 	 * 
 	 */
 	public void start() {
-		
 		server.start();
 	}
 }
