@@ -110,6 +110,14 @@ public class VirtualNode {
 		return vms.get(i);
 	}
 	
+	public VirtualMachine getVirtualMachineByName(String vm){
+		for(VirtualMachine aux : vms){
+			if(aux.getId().equals(vm))
+				return aux;
+		}
+		return null;
+	}
+	
 	/**
 	 * Performs an insert or update against the virtual machine table
 	 * @throws SQLException

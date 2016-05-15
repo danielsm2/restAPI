@@ -111,6 +111,15 @@ public class VDC {
 		return vnodes.get(i);
 	}
 	
+	public VirtualMachine getVMachineByName(String vm){
+		for(VirtualNode aux : vnodes){
+			VirtualMachine res = aux.getVirtualMachineByName(vm);
+			if(res != null)
+				return res;
+		}
+		return null;
+	}
+	
 	/**
 	 * Obtain the virtual link identified by a list position
 	 * @param i the position of the list

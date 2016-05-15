@@ -27,13 +27,13 @@ public class VirtualMachine {
 	private String imageID;
 	
 	/** The amount of requested memory. */
-    private transient String memory;
+    private transient Double memory;
     
 	/** The amount of requested disk. */
-	private transient String disk;
+	private transient Double disk;
 	
 	/** The number of requested cpu cores. */
-	private transient String cpus;
+	private transient int cpus;
 	
 	/**
 	 * Creates a new virtual machine instance
@@ -61,7 +61,7 @@ public class VirtualMachine {
 	 * Set the CPU of the virtual machine
 	 * @param cpu - the new cpu value of the virtual machine
 	 */
-	public void setCPU(String cpu){
+	public void setCPU(int cpu){
 		this.cpus = cpu;
 	}
 	
@@ -69,7 +69,7 @@ public class VirtualMachine {
 	 * Set the Mem of the virtual machine 
 	 * @param memory - the new mem value of the virtual machine
 	 */
-	public void setMem(String memory){
+	public void setMem(Double memory){
 		this.memory = memory;
 	}
 	
@@ -77,7 +77,7 @@ public class VirtualMachine {
 	 * Set the disk of the virtual machine
 	 * @param disk - the new disk of the virtual machine
 	 */
-	public void setDisk(String disk){
+	public void setDisk(Double disk){
 		this.disk = disk;
 	}
 	

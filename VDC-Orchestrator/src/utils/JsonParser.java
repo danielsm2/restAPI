@@ -20,6 +20,7 @@ import tenant.TenantList;
 import topology.Switch;
 import topology.Topology;
 import vdc.VDC;
+import vdc.VirtualMachine;
 
 public class JsonParser {
 
@@ -31,7 +32,7 @@ public class JsonParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public ArrayList<Flavor> readFlavorList(InputStream in) throws IOException {
+	/*public ArrayList<Flavor> readFlavorList(InputStream in) throws IOException {
 		
 		ArrayList<Flavor> flavors = new ArrayList<Flavor>(0);
 		
@@ -72,6 +73,44 @@ public class JsonParser {
 		}
 		
 		return flavors;
+	}*/
+	
+public List<String> readFlavorList(InputStream in) throws IOException {
+		
+		List<String> flavors = new ArrayList<String>();
+		
+		try {
+			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+			reader.beginObject();
+			reader.nextName();
+			reader.beginArray();
+			while (reader.hasNext()) {
+				reader.beginObject();
+				String id ="";
+				String name;
+				while (reader.hasNext()) {
+					name = reader.nextName();					   
+					   if(name.equals("id"))
+					   {
+						   id = reader.nextString();
+					   }
+					   else
+					   {
+						   reader.skipValue();
+					   }
+				   }
+				flavors.add(id);
+				reader.endObject();
+			   }
+			reader.endArray();
+			reader.endObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			reader.close();
+		}
+		
+		return flavors;
 	}
 	
 	/**
@@ -80,7 +119,7 @@ public class JsonParser {
 	 * @param flavor - the flavor which to save the data
 	 * @throws IOException
 	 */
-	public void readFlavor(InputStream in, Flavor flavor) throws IOException {
+	public void readFlavor(InputStream in, VirtualMachine vm) throws IOException {
 		
 		try {
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
@@ -92,15 +131,15 @@ public class JsonParser {
 				
 				if(n.equals("disk")) {
 					
-					flavor.setDisk(reader.nextDouble());
+					vm.setDisk(reader.nextDouble());
 					
 				} else if (n.equals("ram")) {
 					
-					flavor.setMemory(reader.nextDouble());
+					vm.setMem(reader.nextDouble());
 					
 				} else if (n.equals("vcpus")) {
 					
-					flavor.setVcpus(reader.nextInt());
+					vm.setCPU(reader.nextInt());
 					
 				} else {
 					
