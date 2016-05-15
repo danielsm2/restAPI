@@ -9,13 +9,17 @@ public class Properties {
 	private Network_id network_id;
 	private String cidr;
 	private String gateway_ip;
-	private boolean enable_dhcp;
+	private String enable_dhcp;
 	private Networks networks;
+	private Subnet_id fixed_ips;
 	
 	public Properties(String name){
 		this.name = name;
 	}
-	
+	public Properties(Network_id network_id, Subnet_id fixed_ips){
+		this.network_id = network_id;
+		this.fixed_ips = fixed_ips;
+	}
 	public Properties(String name, String image, String flavor, String availability_zone, String port){
 		this.name = name;
 		this.image = image;
@@ -24,7 +28,7 @@ public class Properties {
 		this.networks = new Networks(port);
 	}
 	
-	public Properties(Network_id network_id, String name, String cidr, String gateway_ip, boolean enable_dhcp){
+	public Properties(Network_id network_id, String name, String cidr, String gateway_ip, String enable_dhcp){
 		this.network_id = network_id;
 		this.name = name;
 		this.cidr = cidr;

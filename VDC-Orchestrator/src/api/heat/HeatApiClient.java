@@ -1,14 +1,9 @@
 package api.heat;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +35,6 @@ public class HeatApiClient {
 	}
 	
 	private String buildJson(VDC vdc){
-		//VDC vdc = db.getLocalVDC(tenantID);
 		List<JsonElement> je = new ArrayList<JsonElement>();
 		JsonObject resources= new JsonObject();
 		je.add(createNetwork("test_network_1","OS::Neutron::Net"));
@@ -51,11 +45,12 @@ public class HeatApiClient {
 		for(int i = 0; i < vdc.getSizeVNode(); ++i){
 			VirtualNode vn = vdc.getVNodeByPos(i);
 			for(int j = 0; j < vn.getSizeVirtualMachine(); ++j){
-				Port port = new Port(new Network_id("test_network_1"), "port" + i + j, new Network_id("test_subnet_1"));
+				//Port port = new Port(new Network_id("test_network_1"), "port" + i + j, new Network_id("test_subnet_1"));
 				VirtualMachine vm = vn.getVirtualMachine(j);
-				je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova:ubuntu-devstack","OS::Nova::Server", port.getName()));
-				resources.add("port"+i+j, gson.toJsonTree(port));
+				je.add(createHost("host" + i + j, vm.getImage(), vm.getFlavorName(),"nova:ubuntu-devstack","OS::Nova::Server", "port" + i + j));
 				resources.add("host" + i +j, je.get(je.size()-1));
+				je.add(createPort("OS::Neutron::Port", "test_network_1", "test_subnet_1"));
+				resources.add("port"+i+j, je.get(je.size()-1));
 			}
 		}
 		
@@ -76,7 +71,7 @@ public class HeatApiClient {
 	}
 	public ErrorCheck deployTopology(String heatURL, String tenantID, String token, String type, VDC vdc){		
 		try{
-			if(type == "DELETE"){
+			/*if(type == "DELETE"){
 				URL url = new URL(db.getStack(tenantID));
 				http = (HttpURLConnection) url.openConnection();
 				http.setRequestMethod("DELETE");
@@ -95,15 +90,15 @@ public class HeatApiClient {
 					http.setRequestMethod("PUT");
 				}
 				http.setRequestProperty("Content-Type", "application/json");
-				http.setRequestProperty("X-Auth-Token", token);
+				http.setRequestProperty("X-Auth-Token", token);*/
 				
 				String json = buildJson(vdc);
 				System.out.println(json);
 				
 				writeOutputStream(http, json);
-			}
+			//}
 						
-			int code = http.getResponseCode();
+			/*int code = http.getResponseCode();
 			if(code == HttpURLConnection.HTTP_CREATED){
 				System.out.println("Deployed topology");
 				JsonParser jp = new JsonParser();
@@ -124,7 +119,7 @@ public class HeatApiClient {
 				//TODO devolver el codigo correcto segun 'code'
 				System.err.println(code + " " + http.getResponseMessage());
 				return ErrorCheck.BAD_CONTENT_TYPE;
-			}
+			}*/
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -132,22 +127,29 @@ public class HeatApiClient {
 	}
 	
 	private JsonElement createNetwork(String name, String type){
-		Properties p1 = new Properties(name);
-		Element e1 = new Element(type,p1);
-		return gson.toJsonTree(e1);
+		Properties p = new Properties(name);
+		Element e = new Element(type,p);
+		return gson.toJsonTree(e);
 	}
 	
 	private JsonElement createSubnet(String network, String name, String ip, String type){
-		Network_id ni1 = new Network_id(network);
-		Properties p2 = new Properties(ni1,name,ip, "null", true);
-		Element e2 = new Element(type, p2);
-		return gson.toJsonTree(e2);
+		Network_id ni = new Network_id(network);
+		Properties p = new Properties(ni,name,ip, "null", "true");
+		Element e = new Element(type, p);
+		return gson.toJsonTree(e);
 	}
 	
 	private JsonElement createHost(String name, String image, String flavor, String availability_zone, String type, String port){
-		Properties p3 = new Properties(name, image, flavor,availability_zone, port);
-		Element e3 = new Element(type, p3);
-		return gson.toJsonTree(e3);
+		Properties p = new Properties(name, image, flavor,availability_zone, port);
+		Element e = new Element(type, p);
+		return gson.toJsonTree(e);
+	}
+	
+	private JsonElement createPort(String type, String network, String subnet){
+		Properties p = new Properties(new Network_id(network), new Subnet_id(new Network_id(subnet)));
+		Element e = new Element(type, p);
+		return gson.toJsonTree(e);
+		
 	}
 	
 	public void saveStack(){
