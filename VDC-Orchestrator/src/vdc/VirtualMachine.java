@@ -120,6 +120,18 @@ public class VirtualMachine {
 	public String getFlavorName(){
 		return flavorName;
 	}
+	
+	public Double getDisk(){
+		return disk;
+	}
+	
+	public Double getMem(){
+		return memory;
+	}
+	
+	public int getCPU(){
+		return cpus;
+	}
 	/*public String getInfoMachine(){
 		Iterator<String> it = VMS.keySet().iterator();
 		String result = "";

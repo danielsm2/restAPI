@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,9 +105,9 @@ public class NovaApiClient {
 		return flavors;
 	}*/
 	
-public List<String> getFlavors(String novacontrollerurl, String token, JsonParser parser, String id, VDC vdc) {
+public Map<String,String> getFlavors(String novacontrollerurl, String token, JsonParser parser, String id, VDC vdc) {
 		
-		List<String> flavors = new ArrayList<String>();
+		Map<String, String> flavors = new HashMap<String,String>();
 		
 		HttpURLConnection connection = null;
 		
@@ -134,33 +133,36 @@ public List<String> getFlavors(String novacontrollerurl, String token, JsonParse
 	            
 	            flavors = parser.readFlavorList(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
 	            
-	    		for(int i = 0; i < flavors.size(); ++i) {
-	    			VirtualMachine vm = vdc.getVMachineByName(flavors.get(i));
-	    			
-	    			String idFlavor = vm.getId();
-	    			url = new URL("http://" + novacontrollerurl+":8774/v2.1/" + id + "/flavors/"+idFlavor); 
-	    			connection = (HttpURLConnection)url.openConnection();
-	    			connection.setRequestMethod("GET");
-	    			connection.setRequestProperty("X-Auth-Token", token);
-	    			
-	    			code = connection.getResponseCode();
-	    			
-	    			if(code == HttpURLConnection.HTTP_OK) {
-	    				
-	    				in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    	            response = new StringBuffer();
-	    	            inputLine = null;
-	    	 
-	    	            while ((inputLine = in.readLine()) != null) {
-	    	                response.append(inputLine);
-	    	            }
-	    	            in.close();
-	    	            
-	    	           json = response.toString();
-	    	           parser.readFlavor(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)),vm);
-	    			}
-	    			else {
-	    				System.out.println(code+" "+connection.getResponseMessage());
+	    		for(Entry<String, String> aux : flavors.entrySet()) {
+	    			VirtualMachine vm = vdc.getVMachineByName(aux.getKey());
+	    			if(vm != null){
+		    			//vm.setId(aux.getValue()); TODO
+		    			String idFlavor = aux.getValue();
+		    			
+		    			url = new URL("http://" + novacontrollerurl+":8774/v2.1/" + id + "/flavors/" + idFlavor); 
+		    			connection = (HttpURLConnection)url.openConnection();
+		    			connection.setRequestMethod("GET");
+		    			connection.setRequestProperty("X-Auth-Token", token);
+		    			
+		    			code = connection.getResponseCode();
+		    			
+		    			if(code == HttpURLConnection.HTTP_OK) {
+		    				
+		    				in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		    	            response = new StringBuffer();
+		    	            inputLine = null;
+		    	 
+		    	            while ((inputLine = in.readLine()) != null) {
+		    	                response.append(inputLine);
+		    	            }
+		    	            in.close();
+		    	            
+		    	           json = response.toString();
+		    	           parser.readFlavor(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)),vm);
+		    			}
+		    			else {
+		    				System.out.println(code+" "+connection.getResponseMessage());
+		    			}
 	    			}
 	    		}
 			}

@@ -87,7 +87,7 @@ public class HorizonApiHandler implements HttpHandler{
 						
 						ArrayList<Flavor> flavors = nac.getFlavors(Conf.IP_Nova, token, parser, id, vdc);
 						
-						System.out.println(flavors.toString());
+						//System.out.println(flavors.toString());
 						
 						Map<String,Host> hosts = nac.getHosts(Conf.IP_Nova, token, parser, id);
 						

@@ -3,7 +3,6 @@ package utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-import api.nova.Flavor;
 import api.nova.Host;
 import tenant.Tenant;
 import tenant.TenantList;
@@ -76,9 +74,9 @@ public class JsonParser {
 		return flavors;
 	}*/
 	
-public List<String> readFlavorList(InputStream in) throws IOException {
+public Map<String, String> readFlavorList(InputStream in) throws IOException {
 		
-		List<String> flavors = new ArrayList<String>();
+		Map<String,String> flavors = new HashMap<String,String>();
 		
 		try {
 			reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
@@ -88,19 +86,17 @@ public List<String> readFlavorList(InputStream in) throws IOException {
 			while (reader.hasNext()) {
 				reader.beginObject();
 				String id ="";
-				String name;
+				String name="";
 				while (reader.hasNext()) {
-					name = reader.nextName();					   
-					   if(name.equals("id"))
-					   {
+					String element = reader.nextName();					   
+					   if(element.equals("id"))
 						   id = reader.nextString();
-					   }
+					   else if(element.equals("name"))
+						   name = reader.nextString();
 					   else
-					   {
 						   reader.skipValue();
-					   }
 				   }
-				flavors.add(id);
+				flavors.put(name, id);
 				reader.endObject();
 			   }
 			reader.endArray();
@@ -110,7 +106,6 @@ public List<String> readFlavorList(InputStream in) throws IOException {
 		} finally {
 			reader.close();
 		}
-		
 		return flavors;
 	}
 	
@@ -481,7 +476,6 @@ public List<String> readFlavorList(InputStream in) throws IOException {
 	}
 	
 	public void getIps(InputStream is, List<Boolean> ips){
-		String firstFreeIP = "";
 		try {
 			reader = new JsonReader(new InputStreamReader(is,"UTF-8"));
 			reader.beginObject();
